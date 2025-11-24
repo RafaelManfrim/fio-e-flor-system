@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Cliente {
+  id        String   @id @default(uuid())
+  nome      String
+  telefone  String?
+  endereco  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendas Venda[]
+
+  @@map("clientes")
+}
+
+model Insumo {
+  id        String   @id @default(uuid())
+  nome      String
+  estoque   Float    @default(0)
+  unidade   String // ex: metros, gramas, unidades
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  materiais MaterialInsumo[]
+
+  @@map("insumos")
+}
+
+model Material {
+  id        String   @id @default(uuid())
+  nome      String
+  descricao String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  insumos  MaterialInsumo[]
+  produtos ProdutoMaterial[]
+
+  @@map("materiais")
+}
+
+model MaterialInsumo {
+  id         String @id @default(uuid())
+  materialId String
+  insumoId   String
+  quantidade Float
+
+  material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  insumo   Insumo   @relation(fields: [insumoId], references: [id], onDelete: Cascade)
+
+  @@map("materiais_insumos")
+}
+
+model Produto {
+  id        String   @id @default(uuid())
+  nome      String
+  descricao String?
+  preco     Float
+  custo     Float    @default(0)
+  imagens   String   @default("[]") // JSON string de URLs das imagens
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  materiais ProdutoMaterial[]
+  vendas    VendaProduto[]
+
+  @@map("produtos")
+}
+
+model ProdutoMaterial {
+  id         String @id @default(uuid())
+  produtoId  String
+  materialId String
+  quantidade Float
+
+  produto  Produto  @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+
+  @@map("produtos_materiais")
+}
+
+model Venda {
+  id         String   @id @default(uuid())
+  clienteId  String?
+  data       DateTime @default(now())
+  valorTotal Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  cliente  Cliente?       @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+  produtos VendaProduto[]
+
+  @@map("vendas")
+}
+
+model VendaProduto {
+  id         String @id @default(uuid())
+  vendaId    String
+  produtoId  String
+  quantidade Int
+  precoUnit  Float
+
+  venda   Venda   @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+  produto Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@map("vendas_produtos")
+}
