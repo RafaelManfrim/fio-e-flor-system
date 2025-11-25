@@ -5,6 +5,7 @@ const vendaRouter = Router();
 const vendaController = new VendaController();
 
 vendaRouter.get('/', vendaController.listar);
+vendaRouter.get('/estatisticas', vendaController.estatisticas);
 vendaRouter.get('/relatorio', vendaController.relatorio);
 vendaRouter.get('/:id', vendaController.buscarPorId);
 vendaRouter.post('/', vendaController.criar);

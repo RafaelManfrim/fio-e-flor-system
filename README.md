@@ -169,8 +169,7 @@ fio-e-flor-system/
 6. [x] Criar CRUD de clientes
 7. [x] Configurar estrutura do frontend
 8. [x] Implementar tela de acesso com senha
-8. [ ] Implementar tela de acesso com senha
-9. [ ] Implementar páginas principais
+9. [x] Implementar páginas principais
 10. [ ] Implementar dashboard e relatórios
 11. [ ] Testes e ajustes finais
 12. [ ] Deploy

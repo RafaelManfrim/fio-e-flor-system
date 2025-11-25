@@ -152,9 +152,6 @@ export function Vendas() {
               </Td>
               <Td align="right">
                 <div className="whitespace-nowrap text-sm font-medium">
-                  <button className="text-indigo-600 hover:text-indigo-900 mr-4">
-                    <Eye className="w-4 h-4 inline" />
-                  </button>
                   <button
                     onClick={() => deletarVenda(venda.id)}
                     className="text-red-600 hover:text-red-900"

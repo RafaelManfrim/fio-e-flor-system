@@ -176,4 +176,87 @@ export class VendaController {
       return res.status(500).json({ error: 'Erro ao gerar relatório' });
     }
   }
+
+  async estatisticas(req: Request, res: Response) {
+    try {
+      // Data do início do mês atual
+      const inicioMes = new Date();
+      inicioMes.setDate(1);
+      inicioMes.setHours(0, 0, 0, 0);
+
+      // Total de vendas do mês
+      const vendasMes = await prisma.venda.findMany({
+        where: {
+          data: {
+            gte: inicioMes,
+          },
+        },
+      });
+
+      const totalVendasMes = vendasMes.reduce(
+        (acc, venda) => acc + venda.valorTotal,
+        0
+      );
+
+      // Total de produtos cadastrados
+      const totalProdutos = await prisma.produto.count();
+
+      // Total de clientes
+      const totalClientes = await prisma.cliente.count();
+
+      // Vendas recentes (últimas 5)
+      const vendasRecentes = await prisma.venda.findMany({
+        take: 5,
+        orderBy: {
+          data: 'desc',
+        },
+        include: {
+          cliente: true,
+          produtos: {
+            include: {
+              produto: true,
+            },
+          },
+        },
+      });
+
+      // Produtos mais vendidos (top 5)
+      const produtosMaisVendidos = await prisma.vendaProduto.groupBy({
+        by: ['produtoId'],
+        _sum: {
+          quantidade: true,
+        },
+        orderBy: {
+          _sum: {
+            quantidade: 'desc',
+          },
+        },
+        take: 5,
+      });
+
+      // Buscar detalhes dos produtos mais vendidos
+      const produtosDetalhes = await Promise.all(
+        produtosMaisVendidos.map(async (item) => {
+          const produto = await prisma.produto.findUnique({
+            where: { id: item.produtoId },
+          });
+          return {
+            produto,
+            quantidade: item._sum.quantidade,
+          };
+        })
+      );
+
+      return res.json({
+        totalVendasMes,
+        totalProdutos,
+        totalClientes,
+        vendasRecentes,
+        produtosMaisVendidos: produtosDetalhes,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Erro ao buscar estatísticas' });
+    }
+  }
 }
