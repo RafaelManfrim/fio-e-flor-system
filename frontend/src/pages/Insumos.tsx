@@ -104,52 +104,86 @@ export function Insumos() {
         </div>
       </div>
 
-      {/* Grid de Insumos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {insumosFiltrados.map((insumo) => (
-          <div key={insumo.id} className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-blue-100 p-2 rounded-lg">
-                  <Package className="w-5 h-5 text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">{insumo.nome}</h3>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => abrirModal(insumo)}
-                  className="text-indigo-600 hover:text-indigo-900"
-                >
-                  <Pencil className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => deletarInsumo(insumo.id)}
-                  className="text-red-600 hover:text-red-900"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Estoque:</span>
-                <span className={`text-lg font-semibold ${
-                  insumo.estoque < 10 ? 'text-red-600' : 'text-green-600'
-                }`}>
-                  {insumo.estoque} {insumo.unidade}
-                </span>
-              </div>
-            </div>
+      {/* Lista de Insumos */}
+      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Insumo
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Estoque
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Unidade
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Ações
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {insumosFiltrados.map((insumo) => (
+              <tr key={insumo.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 p-2 rounded-lg">
+                      <Package className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{insumo.nome}</div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm font-semibold text-gray-900">
+                    {insumo.estoque}
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-600 capitalize">
+                    {insumo.unidade}
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    insumo.estoque < 10 
+                      ? 'bg-red-100 text-red-800' 
+                      : insumo.estoque < 20
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-green-100 text-green-800'
+                  }`}>
+                    {insumo.estoque < 10 ? 'Estoque Baixo' : insumo.estoque < 20 ? 'Atenção' : 'Normal'}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    onClick={() => abrirModal(insumo)}
+                    className="text-indigo-600 hover:text-indigo-900 mr-4"
+                  >
+                    <Pencil className="w-4 h-4 inline" />
+                  </button>
+                  <button
+                    onClick={() => deletarInsumo(insumo.id)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    <Trash2 className="w-4 h-4 inline" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {insumosFiltrados.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            Nenhum insumo encontrado
           </div>
-        ))}
+        )}
       </div>
-
-      {insumosFiltrados.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          Nenhum insumo encontrado
-        </div>
-      )}
 
       <InsumoModal
         isOpen={showModal}

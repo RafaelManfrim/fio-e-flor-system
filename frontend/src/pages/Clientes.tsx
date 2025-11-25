@@ -3,6 +3,7 @@ import { Plus, Pencil, Trash2, Search, Phone, MapPin } from 'lucide-react';
 import api from '../services/api';
 import { ClienteModal } from '../components/ClienteModal';
 import type { Cliente } from '../dtos/Cliente';
+import type { ClienteFormData } from '../schemas';
 
 export function Clientes() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -38,7 +39,7 @@ export function Clientes() {
     }
   };
 
-  const handleSaveCliente = async (clienteData: any) => {
+  const handleSaveCliente = async (clienteData: ClienteFormData) => {
     try {
       if (editingCliente) {
         await api.put(`/clientes/${editingCliente.id}`, clienteData);
@@ -97,52 +98,77 @@ export function Clientes() {
       </div>
 
       {/* Lista de Clientes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {clientesFiltrados.map((cliente) => (
-          <div key={cliente.id} className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{cliente.nome}</h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setEditingCliente(cliente);
-                    setShowModal(true);
-                  }}
-                  className="text-indigo-600 hover:text-indigo-900"
-                >
-                  <Pencil className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => deletarCliente(cliente.id)}
-                  className="text-red-600 hover:text-red-900"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            
-            {cliente.telefone && (
-              <div className="flex items-center gap-2 text-gray-600 mb-2">
-                <Phone className="w-4 h-4" />
-                <span className="text-sm">{cliente.telefone}</span>
-              </div>
-            )}
-            
-            {cliente.endereco && (
-              <div className="flex items-center gap-2 text-gray-600">
-                <MapPin className="w-4 h-4" />
-                <span className="text-sm">{cliente.endereco}</span>
-              </div>
-            )}
+      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Nome
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Telefone
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Endereço
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Ações
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {clientesFiltrados.map((cliente) => (
+              <tr key={cliente.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4">
+                  <div className="text-sm font-medium text-gray-900">{cliente.nome}</div>
+                </td>
+                <td className="px-6 py-4">
+                  {cliente.telefone ? (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Phone className="w-4 h-4" />
+                      <span>{cliente.telefone}</span>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-gray-400">-</span>
+                  )}
+                </td>
+                <td className="px-6 py-4">
+                  {cliente.endereco ? (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <MapPin className="w-4 h-4" />
+                      <span className="max-w-xs truncate">{cliente.endereco}</span>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-gray-400">-</span>
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    onClick={() => {
+                      setEditingCliente(cliente);
+                      setShowModal(true);
+                    }}
+                    className="text-indigo-600 hover:text-indigo-900 mr-4"
+                  >
+                    <Pencil className="w-4 h-4 inline" />
+                  </button>
+                  <button
+                    onClick={() => deletarCliente(cliente.id)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    <Trash2 className="w-4 h-4 inline" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {clientesFiltrados.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            Nenhum cliente encontrado
           </div>
-        ))}
+        )}
       </div>
-
-      {clientesFiltrados.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          Nenhum cliente encontrado
-        </div>
-      )}
 
       <ClienteModal
         isOpen={showModal}
@@ -151,7 +177,7 @@ export function Clientes() {
           setEditingCliente(null);
         }}
         onSave={handleSaveCliente}
-        cliente={editingCliente}
+        cliente={editingCliente || undefined}
       />
     </div>
   );
