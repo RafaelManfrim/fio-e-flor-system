@@ -1,13 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Search, Package } from 'lucide-react';
 import api from '../services/api';
-
-interface Insumo {
-  id: string;
-  nome: string;
-  estoque: number;
-  unidade: string;
-}
+import type { Insumo } from '../dtos/Insumo';
 
 export function Insumos() {
   const [insumos, setInsumos] = useState<Insumo[]>([]);

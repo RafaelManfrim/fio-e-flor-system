@@ -2,22 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Eye, Trash2, Search, Calendar } from 'lucide-react';
 import api from '../services/api';
 import { VendaModal } from '../components/VendaModal';
-
-interface Venda {
-  id: string;
-  data: string;
-  valorTotal: number;
-  cliente: {
-    nome: string;
-  } | null;
-  produtos: {
-    quantidade: number;
-    precoUnit: number;
-    produto: {
-      nome: string;
-    };
-  }[];
-}
+import type { Venda } from '../dtos/Venda';
 
 export function Vendas() {
   const [vendas, setVendas] = useState<Venda[]>([]);
@@ -25,9 +10,7 @@ export function Vendas() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    carregarVendas();
-  }, []);
+  
 
   const carregarVendas = async () => {
     try {
@@ -70,6 +53,10 @@ export function Vendas() {
 
   const totalVendas = vendas.reduce((acc, v) => acc + v.valorTotal, 0);
 
+  useEffect(() => {
+    carregarVendas();
+  }, []);
+  
   if (loading) {
     return <div className="text-center py-8">Carregando...</div>;
   }

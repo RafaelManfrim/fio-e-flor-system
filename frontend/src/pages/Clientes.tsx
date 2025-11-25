@@ -2,14 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Search, Phone, MapPin } from 'lucide-react';
 import api from '../services/api';
 import { ClienteModal } from '../components/ClienteModal';
-
-interface Cliente {
-  id: string;
-  nome: string;
-  telefone: string | null;
-  endereco: string | null;
-  vendas?: any[];
-}
+import type { Cliente } from '../dtos/Cliente';
 
 export function Clientes() {
   const [clientes, setClientes] = useState<Cliente[]>([]);

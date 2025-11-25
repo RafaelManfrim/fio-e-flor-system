@@ -2,15 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import api from '../services/api';
 import { ProdutoModal } from '../components/ProdutoModal';
-
-interface Produto {
-  id: string;
-  nome: string;
-  descricao: string | null;
-  preco: number;
-  custo: number;
-  imagens: string[];
-}
+import type { Produto } from '../dtos/Produto';
 
 export function Produtos() {
   const [produtos, setProdutos] = useState<Produto[]>([]);

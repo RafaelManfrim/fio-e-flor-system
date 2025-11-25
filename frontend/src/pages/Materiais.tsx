@@ -1,26 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Search, Layers } from 'lucide-react';
 import api from '../services/api';
-
-interface Material {
-  id: string;
-  nome: string;
-  descricao: string | null;
-  insumos: {
-    quantidade: number;
-    insumo: {
-      id: string;
-      nome: string;
-      unidade: string;
-    };
-  }[];
-}
-
-interface Insumo {
-  id: string;
-  nome: string;
-  unidade: string;
-}
+import type { Material } from '../dtos/Material';
+import type { Insumo } from '../dtos/Insumo';
 
 export function Materiais() {
   const [materiais, setMateriais] = useState<Material[]>([]);
