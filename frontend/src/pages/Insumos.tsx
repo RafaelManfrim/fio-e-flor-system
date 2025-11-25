@@ -4,6 +4,7 @@ import api from '../services/api';
 import { InsumoModal } from '../components/InsumoModal';
 import type { Insumo } from '../dtos/Insumo';
 import type { InsumoFormData } from '../schemas';
+import { EstoqueBadge } from '../components/EstoqueBadge';
 
 export function Insumos() {
   const [insumos, setInsumos] = useState<Insumo[]>([]);
@@ -150,15 +151,7 @@ export function Insumos() {
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    insumo.estoque < 10 
-                      ? 'bg-red-100 text-red-800' 
-                      : insumo.estoque < 20
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-green-100 text-green-800'
-                  }`}>
-                    {insumo.estoque < 10 ? 'Estoque Baixo' : insumo.estoque < 20 ? 'Atenção' : 'Normal'}
-                  </span>
+                  <EstoqueBadge quantidade={insumo.estoque} />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button

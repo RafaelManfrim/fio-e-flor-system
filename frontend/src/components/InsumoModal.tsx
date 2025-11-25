@@ -74,7 +74,7 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo }: InsumoModalProp
               type="text"
               {...register('nome')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              placeholder="Ex: Linha de Costura"
+              placeholder="Ex: Haste Azul"
             />
             {errors.nome && (
               <p className="mt-1 text-sm text-red-600">{errors.nome.message}</p>
@@ -107,11 +107,11 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo }: InsumoModalProp
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
               >
                 <option value="">Selecione</option>
-                <option value="metros">Metros</option>
-                <option value="gramas">Gramas</option>
                 <option value="unidades">Unidades</option>
+                {/* <option value="metros">Metros</option>
+                <option value="gramas">Gramas</option>
                 <option value="litros">Litros</option>
-                <option value="kg">Kg</option>
+                <option value="kg">Kg</option> */}
               </select>
               {errors.unidade && (
                 <p className="mt-1 text-sm text-red-600">{errors.unidade.message}</p>

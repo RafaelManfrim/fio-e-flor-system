@@ -19,7 +19,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div>
               <h1 className="text-2xl font-bold text-pink-600">Fio e Flor</h1>
