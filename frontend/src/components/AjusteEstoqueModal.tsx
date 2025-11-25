@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
 import type { Insumo } from '../dtos/Insumo';
 
@@ -32,6 +32,17 @@ export function AjusteEstoqueModal({ isOpen, onClose, onSave, insumo, tipo }: Aj
     setQuantidade('');
     setMotivo('');
   };
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

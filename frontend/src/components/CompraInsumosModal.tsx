@@ -20,21 +20,6 @@ export function CompraInsumosModal({ isOpen, onClose, onSave }: CompraInsumosMod
   const [motivo, setMotivo] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      carregarInsumos();
-    }
-  }, [isOpen]);
-
-  const carregarInsumos = async () => {
-    try {
-      const response = await api.get('/insumos');
-      setInsumos(response.data);
-    } catch (error) {
-      console.error('Erro ao carregar insumos:', error);
-    }
-  };
-
   const adicionarItem = () => {
     setItensCompra([...itensCompra, { insumoId: '', quantidade: 0 }]);
   };
@@ -95,6 +80,32 @@ export function CompraInsumosModal({ isOpen, onClose, onSave }: CompraInsumosMod
   const calcularTotal = () => {
     return itensCompra.filter(item => item.insumoId && item.quantidade > 0).length;
   };
+
+  useEffect(() => {
+    const carregarInsumos = async () => {
+      try {
+        const response = await api.get('/insumos');
+        setInsumos(response.data);
+      } catch (error) {
+        console.error('Erro ao carregar insumos:', error);
+      }
+    };
+
+    if (isOpen) {
+      carregarInsumos();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

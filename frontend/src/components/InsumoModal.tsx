@@ -43,6 +43,17 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo }: InsumoModalProp
     }
   }, [insumo, reset, isOpen]);
 
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
   const onSubmit = (data: InsumoFormData) => {
     onSave(data);
     reset();

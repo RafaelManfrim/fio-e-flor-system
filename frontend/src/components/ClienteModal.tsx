@@ -27,6 +27,11 @@ export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalP
     },
   });
 
+  const onSubmit = (data: ClienteFormData) => {
+    onSave(data);
+    reset();
+  };
+
   useEffect(() => {
     if (cliente) {
       reset({
@@ -43,10 +48,18 @@ export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalP
     }
   }, [cliente, reset]);
 
-  const onSubmit = (data: ClienteFormData) => {
-    onSave(data);
-    reset();
-  };
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
+  
 
   if (!isOpen) return null;
 

@@ -7,6 +7,10 @@ export const materialSchema = z.object({
   descricao: z.string()
     .optional()
     .transform(val => val === '' ? undefined : val),
+  insumos: z.array(z.object({
+    insumoId: z.string(),
+    quantidade: z.number().positive('Quantidade deve ser maior que 0'),
+  })).optional(),
 });
 
 export type MaterialFormData = z.infer<typeof materialSchema>;

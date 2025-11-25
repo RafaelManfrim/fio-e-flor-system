@@ -55,6 +55,17 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
   const carregarProdutos = async () => {
     try {
       const response = await api.get('/produtos');

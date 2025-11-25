@@ -89,13 +89,24 @@ export class MaterialController {
   async atualizar(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { nome, descricao } = req.body;
+      const { nome, descricao, insumos } = req.body;
+
+      // Deletar os insumos antigos e criar os novos
+      await prisma.materialInsumo.deleteMany({
+        where: { materialId: id },
+      });
 
       const material = await prisma.material.update({
         where: { id },
         data: {
           nome,
           descricao,
+          insumos: {
+            create: insumos?.map((i: any) => ({
+              insumoId: i.insumoId,
+              quantidade: i.quantidade,
+            })) || [],
+          },
         },
         include: {
           insumos: {

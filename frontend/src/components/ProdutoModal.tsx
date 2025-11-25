@@ -50,6 +50,17 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
     }
   }, [produto, reset]);
 
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
   const onSubmit = (data: ProdutoFormData) => {
     onSave(data);
     reset();

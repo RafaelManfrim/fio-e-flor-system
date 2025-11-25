@@ -4,6 +4,7 @@ import api from '../services/api';
 import { MaterialModal } from '../components/MaterialModal';
 import type { Material } from '../dtos/Material';
 import type { MaterialFormData } from '../schemas';
+import { Table, Thead, Tbody, Tr, Th, Td } from '../components/Table';
 
 export function Materiais() {
   const [materiais, setMateriais] = useState<Material[]>([]);
@@ -105,51 +106,46 @@ export function Materiais() {
       </div>
 
       {/* Lista de Materiais */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Material
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Insumos Utilizados
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ações
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {materiaisFiltrados.map((material) => (
-              <tr key={material.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-purple-100 p-2 rounded-lg">
-                      <Layers className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{material.nome}</div>
-                      {material.descricao && (
-                        <div className="text-sm text-gray-500">{material.descricao}</div>
-                      )}
-                    </div>
+      <Table>
+        <Thead>
+          <Tr>
+            <Th>Material</Th>
+            <Th>Insumos Utilizados</Th>
+            <Th>Descrição</Th>
+            <Th align="right">Ações</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {materiaisFiltrados.map((material) => (
+            <Tr key={material.id}>
+              <Td>
+                <div className="flex items-center gap-3">
+                  <div className="bg-purple-100 p-2 rounded-lg">
+                    <Layers className="w-5 h-5 text-purple-600" />
                   </div>
-                </td>
-                <td className="px-6 py-4">
-                  {material.insumos.length > 0 ? (
-                    <div className="space-y-1">
-                      {material.insumos.map((mi) => (
-                        <div key={mi.insumo.id} className="text-sm text-gray-600">
-                          {mi.insumo.nome}: {mi.quantidade} {mi.insumo.unidade}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <span className="text-sm text-gray-400">Nenhum insumo vinculado</span>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div className="text-sm font-medium text-gray-900">{material.nome}</div>
+                </div>
+              </Td>
+              <Td>
+                {material.insumos.length > 0 ? (
+                  <div className="space-y-1">
+                    {material.insumos.map((mi) => (
+                      <div key={mi.insumo.id} className="text-sm text-gray-600">
+                        {mi.insumo.nome}: {mi.quantidade} {mi.insumo.unidade}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-sm text-gray-400">Nenhum insumo vinculado</span>
+                )}
+              </Td>
+              <Td>
+                {material.descricao ? (
+                  <div className="text-sm text-gray-500">{material.descricao}</div>
+                ) : "-"}
+              </Td>
+              <Td align="right">
+                <div className="whitespace-nowrap text-sm font-medium">
                   <button
                     onClick={() => abrirModal(material)}
                     className="text-indigo-600 hover:text-indigo-900 mr-4"
@@ -162,19 +158,24 @@ export function Materiais() {
                   >
                     <Trash2 className="w-4 h-4 inline" />
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {materiaisFiltrados.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            Nenhum material encontrado
-          </div>
-        )}
-      </div>
+                </div>
+              </Td>
+            </Tr>
+          ))}
+          {materiaisFiltrados.length === 0 && (
+            <Tr>
+              <Td align="center">
+                <div className="py-8 text-gray-500" style={{ gridColumn: '1 / -1' }}>
+                  Nenhum material encontrado
+                </div>
+              </Td>
+            </Tr>
+          )}
+        </Tbody>
+      </Table>
 
       <MaterialModal
+        key={editingMaterial?.id}
         isOpen={showModal}
         onClose={fecharModal}
         onSave={handleSaveMaterial}
