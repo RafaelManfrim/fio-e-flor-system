@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Search, Package } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Package, ArrowUpCircle, ArrowDownCircle, ShoppingCart } from 'lucide-react';
 import api from '../services/api';
 import { InsumoModal } from '../components/InsumoModal';
+import { AjusteEstoqueModal } from '../components/AjusteEstoqueModal';
+import { CompraInsumosModal } from '../components/CompraInsumosModal';
 import type { Insumo } from '../dtos/Insumo';
 import type { InsumoFormData } from '../schemas';
 import { EstoqueBadge } from '../components/EstoqueBadge';
+import { Table, Thead, Tbody, Tr, Th, Td } from '../components/Table';
 
 export function Insumos() {
   const [insumos, setInsumos] = useState<Insumo[]>([]);
@@ -12,6 +15,10 @@ export function Insumos() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingInsumo, setEditingInsumo] = useState<Insumo | null>(null);
+  const [showAjusteModal, setShowAjusteModal] = useState(false);
+  const [insumoAjuste, setInsumoAjuste] = useState<Insumo | null>(null);
+  const [tipoAjuste, setTipoAjuste] = useState<'adicionar' | 'remover'>('adicionar');
+  const [showCompraModal, setShowCompraModal] = useState(false);
 
   useEffect(() => {
     carregarInsumos();
@@ -67,6 +74,36 @@ export function Insumos() {
     setEditingInsumo(null);
   };
 
+  const abrirModalAjuste = (insumo: Insumo, tipo: 'adicionar' | 'remover') => {
+    setInsumoAjuste(insumo);
+    setTipoAjuste(tipo);
+    setShowAjusteModal(true);
+  };
+
+  const fecharModalAjuste = () => {
+    setShowAjusteModal(false);
+    setInsumoAjuste(null);
+  };
+
+  const handleAjusteEstoque = async (quantidade: number, motivo: string) => {
+    if (!insumoAjuste) return;
+
+    try {
+      const endpoint = tipoAjuste === 'adicionar' 
+        ? `/insumos/${insumoAjuste.id}/adicionar-estoque`
+        : `/insumos/${insumoAjuste.id}/remover-estoque`;
+
+      await api.patch(endpoint, { quantidade, motivo });
+      
+      setShowAjusteModal(false);
+      setInsumoAjuste(null);
+      carregarInsumos();
+    } catch (error) {
+      console.error('Erro ao ajustar estoque:', error);
+      alert('Erro ao ajustar estoque');
+    }
+  };
+
   const insumosFiltrados = insumos.filter((i) =>
     i.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -82,13 +119,22 @@ export function Insumos() {
           <h2 className="text-3xl font-bold text-gray-900">Insumos</h2>
           <p className="text-gray-600 mt-1">{insumos.length} insumos cadastrados</p>
         </div>
-        <button
-          onClick={() => abrirModal()}
-          className="flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg transition"
-        >
-          <Plus className="w-5 h-5" />
-          Novo Insumo
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowCompraModal(true)}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+          >
+            <ShoppingCart className="w-5 h-5" />
+            Compra de Insumos
+          </button>
+          <button
+            onClick={() => abrirModal()}
+            className="flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg transition"
+          >
+            <Plus className="w-5 h-5" />
+            Novo Insumo
+          </button>
+        </div>
       </div>
 
       {/* Search */}
@@ -106,83 +152,109 @@ export function Insumos() {
       </div>
 
       {/* Lista de Insumos */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Insumo
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Estoque
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Unidade
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ações
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {insumosFiltrados.map((insumo) => (
-              <tr key={insumo.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <Package className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{insumo.nome}</div>
-                    </div>
+      <Table>
+        <Thead>
+          <Tr>
+            <Th>Insumo</Th>
+            <Th>Estoque</Th>
+            <Th>Unidade</Th>
+            <Th>Status</Th>
+            <Th align="right">Ações</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {insumosFiltrados.map((insumo) => (
+            <Tr key={insumo.id}>
+              <Td>
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-100 p-2 rounded-lg">
+                    <Package className="w-5 h-5 text-blue-600" />
                   </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm font-semibold text-gray-900">
-                    {insumo.estoque}
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">{insumo.nome}</div>
                   </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-600 capitalize">
-                    {insumo.unidade}
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <EstoqueBadge quantidade={insumo.estoque} />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                </div>
+              </Td>
+              <Td>
+                <div className="text-sm font-semibold text-gray-900">
+                  {insumo.estoque}
+                </div>
+              </Td>
+              <Td>
+                <div className="text-sm text-gray-600 capitalize">
+                  {insumo.unidade}
+                </div>
+              </Td>
+              <Td>
+                <EstoqueBadge quantidade={insumo.estoque} />
+              </Td>
+              <Td align="right">
+                <div className="whitespace-nowrap text-sm font-medium flex items-center justify-end gap-2">
+                  <button
+                    onClick={() => abrirModalAjuste(insumo, 'adicionar')}
+                    className="text-green-600 hover:text-green-900"
+                    title="Adicionar estoque"
+                  >
+                    <ArrowUpCircle className="w-4 h-4 inline" />
+                  </button>
+                  <button
+                    onClick={() => abrirModalAjuste(insumo, 'remover')}
+                    className="text-orange-600 hover:text-orange-900"
+                    title="Remover estoque"
+                  >
+                    <ArrowDownCircle className="w-4 h-4 inline" />
+                  </button>
                   <button
                     onClick={() => abrirModal(insumo)}
-                    className="text-indigo-600 hover:text-indigo-900 mr-4"
+                    className="text-indigo-600 hover:text-indigo-900"
+                    title="Editar"
                   >
                     <Pencil className="w-4 h-4 inline" />
                   </button>
                   <button
                     onClick={() => deletarInsumo(insumo.id)}
                     className="text-red-600 hover:text-red-900"
+                    title="Deletar"
                   >
                     <Trash2 className="w-4 h-4 inline" />
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {insumosFiltrados.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            Nenhum insumo encontrado
-          </div>
-        )}
-      </div>
+                </div>
+              </Td>
+            </Tr>
+          ))}
+          {insumosFiltrados.length === 0 && (
+            <Tr>
+              <Td align="center">
+                <div className="py-8 text-gray-500" style={{ gridColumn: '1 / -1' }}>
+                  Nenhum insumo encontrado
+                </div>
+              </Td>
+            </Tr>
+          )}
+        </Tbody>
+      </Table>
 
       <InsumoModal
         isOpen={showModal}
         onClose={fecharModal}
         onSave={handleSaveInsumo}
         insumo={editingInsumo || undefined}
+      />
+
+      {insumoAjuste && (
+        <AjusteEstoqueModal
+          isOpen={showAjusteModal}
+          onClose={fecharModalAjuste}
+          onSave={handleAjusteEstoque}
+          insumo={insumoAjuste}
+          tipo={tipoAjuste}
+        />
+      )}
+
+      <CompraInsumosModal
+        isOpen={showCompraModal}
+        onClose={() => setShowCompraModal(false)}
+        onSave={carregarInsumos}
       />
     </div>
   );

@@ -31,7 +31,7 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo }: InsumoModalProp
     if (insumo) {
       reset({
         nome: insumo.nome,
-        estoque: insumo.estoque,
+        estoque: Number(insumo.estoque),
         unidade: insumo.unidade,
       });
     } else {
@@ -41,7 +41,7 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo }: InsumoModalProp
         unidade: '',
       });
     }
-  }, [insumo, reset]);
+  }, [insumo, reset, isOpen]);
 
   const onSubmit = (data: InsumoFormData) => {
     onSave(data);
@@ -89,7 +89,8 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo }: InsumoModalProp
               <input
                 type="number"
                 step="0.01"
-                {...register('estoque')}
+                min="0"
+                {...register('estoque', { valueAsNumber: true })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 placeholder="0"
               />
@@ -108,10 +109,10 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo }: InsumoModalProp
               >
                 <option value="">Selecione</option>
                 <option value="unidades">Unidades</option>
-                {/* <option value="metros">Metros</option>
+                <option value="metros">Metros</option>
                 <option value="gramas">Gramas</option>
+                <option value="kg">Kg</option>
                 <option value="litros">Litros</option>
-                <option value="kg">Kg</option> */}
               </select>
               {errors.unidade && (
                 <p className="mt-1 text-sm text-red-600">{errors.unidade.message}</p>

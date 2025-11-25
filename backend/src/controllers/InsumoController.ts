@@ -71,7 +71,7 @@ export class InsumoController {
         where: { id },
         data: {
           nome,
-          estoque: estoque ? parseFloat(estoque) : undefined,
+          estoque: estoque !== undefined ? parseFloat(estoque) : undefined,
           unidade,
         },
       });
@@ -95,6 +95,87 @@ export class InsumoController {
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Erro ao deletar insumo' });
+    }
+  }
+
+  async adicionarEstoque(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { quantidade, motivo } = req.body;
+
+      if (!quantidade || quantidade <= 0) {
+        return res.status(400).json({ error: 'Quantidade inválida' });
+      }
+
+      const insumo = await prisma.insumo.findUnique({
+        where: { id },
+      });
+
+      if (!insumo) {
+        return res.status(404).json({ error: 'Insumo não encontrado' });
+      }
+
+      const insumoAtualizado = await prisma.insumo.update({
+        where: { id },
+        data: {
+          estoque: insumo.estoque + parseFloat(quantidade),
+        },
+      });
+
+      return res.json({
+        ...insumoAtualizado,
+        movimentacao: {
+          tipo: 'entrada',
+          quantidade: parseFloat(quantidade),
+          motivo: motivo || 'Entrada de estoque',
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Erro ao adicionar estoque' });
+    }
+  }
+
+  async removerEstoque(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { quantidade, motivo } = req.body;
+
+      if (!quantidade || quantidade <= 0) {
+        return res.status(400).json({ error: 'Quantidade inválida' });
+      }
+
+      const insumo = await prisma.insumo.findUnique({
+        where: { id },
+      });
+
+      if (!insumo) {
+        return res.status(404).json({ error: 'Insumo não encontrado' });
+      }
+
+      const qtd = parseFloat(quantidade);
+      if (qtd > insumo.estoque) {
+        return res.status(400).json({ error: 'Quantidade maior que o estoque disponível' });
+      }
+
+      const insumoAtualizado = await prisma.insumo.update({
+        where: { id },
+        data: {
+          estoque: insumo.estoque - qtd,
+        },
+      });
+
+      return res.json({
+        ...insumoAtualizado,
+        movimentacao: {
+          tipo: 'saida',
+          quantidade: qtd,
+          motivo: motivo || 'Saída de estoque',
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Erro ao remover estoque' });
     }
   }
 }
