@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { vendaSchema, type VendaFormData } from '../schemas';
 import api from '../services/api';
+import { useConfig } from '../hooks/useConfig';
 
 interface VendaModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ interface Cliente {
 export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const { controlarEstoque } = useConfig();
 
   const {
     register,
@@ -120,7 +122,14 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto transition-colors">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Nova Venda</h3>
+          <div>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Nova Venda</h3>
+            {controlarEstoque && (
+              <p className="text-sm text-green-600 dark:text-green-400 mt-1">
+                ⚠️ Controle de estoque ativo - os insumos serão decrementados
+              </p>
+            )}
+          </div>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"

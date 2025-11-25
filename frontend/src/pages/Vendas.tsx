@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Plus, Eye, Trash2, Search, Calendar } from 'lucide-react';
+import { Plus, Trash2, Search, Calendar } from 'lucide-react';
 import api from '../services/api';
 import { VendaModal } from '../components/VendaModal';
+import { Toast } from '../components/Toast';
 import type { Venda } from '../dtos/Venda';
 import { Table, Thead, Tbody, Tr, Th, Td } from '../components/Table';
 import type { VendaFormData } from '../schemas';
+import { useConfig } from '../hooks/useConfig';
 
 export function Vendas() {
   const [vendas, setVendas] = useState<Venda[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
+  const { controlarEstoque } = useConfig();
 
   const carregarVendas = async () => {
     try {
@@ -29,9 +33,10 @@ export function Vendas() {
     try {
       await api.delete(`/vendas/${id}`);
       carregarVendas();
+      setToast({ message: 'Venda deletada com sucesso!', type: 'success' });
     } catch (error) {
       console.error('Erro ao deletar venda:', error);
-      alert('Erro ao deletar venda');
+      setToast({ message: 'Erro ao deletar venda', type: 'error' });
     }
   };
 
@@ -43,12 +48,21 @@ export function Vendas() {
       await api.post('/vendas', {
         ...vendaData,
         data: dataComHorario,
+        controlarEstoque,
       });
       setShowModal(false);
       carregarVendas();
-    } catch (error) {
+      setToast({ 
+        message: controlarEstoque 
+          ? 'Venda registrada com sucesso! Estoque atualizado.' 
+          : 'Venda registrada com sucesso!',
+        type: 'success'
+      });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error('Erro ao salvar venda:', error);
-      alert('Erro ao salvar venda');
+      const mensagemErro = error.response?.data?.error || 'Erro ao salvar venda';
+      setToast({ message: mensagemErro, type: 'error' });
     }
   };
 
@@ -179,6 +193,14 @@ export function Vendas() {
         onClose={() => setShowModal(false)}
         onSave={handleSaveVenda}
       />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

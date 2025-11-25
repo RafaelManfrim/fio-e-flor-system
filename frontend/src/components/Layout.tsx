@@ -1,11 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Package, ShoppingCart, Users, Boxes, Layers, LogOut, Moon, Sun } from 'lucide-react';
+import { Home, Package, ShoppingCart, Users, Boxes, Layers, LogOut, Moon, Sun, Archive } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
+import { useConfig } from '../hooks/useConfig';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { controlarEstoque, toggleControleEstoque } = useConfig();
   const location = useLocation();
 
   const menuItems = [
@@ -28,6 +30,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <p className="text-sm text-gray-600 dark:text-gray-400">Sistema de Gerenciamento</p>
             </div>
             <div className="flex items-center gap-3">
+              <button
+                onClick={toggleControleEstoque}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition ${
+                  controlarEstoque
+                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                }`}
+                title={
+                  controlarEstoque
+                    ? 'Controle de estoque ativado - clique para desativar'
+                    : 'Controle de estoque desativado - clique para ativar'
+                }
+              >
+                <Archive className="w-5 h-5" />
+                <span className="text-sm font-medium">
+                  Estoque: {controlarEstoque ? 'ON' : 'OFF'}
+                </span>
+              </button>
               <button
                 onClick={toggleTheme}
                 className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"

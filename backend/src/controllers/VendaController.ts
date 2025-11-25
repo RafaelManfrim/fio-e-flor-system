@@ -54,7 +54,7 @@ export class VendaController {
 
   async criar(req: Request, res: Response) {
     try {
-      const { clienteId, produtos, data } = req.body;
+      const { clienteId, produtos, data, controlarEstoque } = req.body;
 
       // Calcular valor total
       let valorTotal = 0;
@@ -63,6 +63,26 @@ export class VendaController {
       for (const item of produtos) {
         const produto = await prisma.produto.findUnique({
           where: { id: item.produtoId },
+          include: {
+            materiais: {
+              include: {
+                material: {
+                  include: {
+                    insumos: {
+                      include: {
+                        insumo: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            insumos: {
+              include: {
+                insumo: true,
+              },
+            },
+          },
         });
 
         if (!produto) {
@@ -79,6 +99,59 @@ export class VendaController {
           quantidade: item.quantidade,
           precoUnit,
         });
+
+        // Se controle de estoque estiver ativado, decrementar insumos
+        if (controlarEstoque) {
+          // Decrementar insumos diretos do produto
+          for (const produtoInsumo of produto.insumos) {
+            const quantidadeTotal =
+              produtoInsumo.quantidade * item.quantidade;
+
+            // Verificar se há estoque suficiente
+            if (produtoInsumo.insumo.estoque < quantidadeTotal) {
+              return res.status(400).json({
+                error: `Estoque insuficiente do insumo "${produtoInsumo.insumo.nome}". Disponível: ${produtoInsumo.insumo.estoque} ${produtoInsumo.insumo.unidade}, Necessário: ${quantidadeTotal} ${produtoInsumo.insumo.unidade}`,
+              });
+            }
+
+            // Decrementar estoque
+            await prisma.insumo.update({
+              where: { id: produtoInsumo.insumoId },
+              data: {
+                estoque: {
+                  decrement: quantidadeTotal,
+                },
+              },
+            });
+          }
+
+          // Decrementar insumos dos materiais do produto
+          for (const produtoMaterial of produto.materiais) {
+            for (const materialInsumo of produtoMaterial.material.insumos) {
+              const quantidadeTotal =
+                materialInsumo.quantidade *
+                produtoMaterial.quantidade *
+                item.quantidade;
+
+              // Verificar se há estoque suficiente
+              if (materialInsumo.insumo.estoque < quantidadeTotal) {
+                return res.status(400).json({
+                  error: `Estoque insuficiente do insumo "${materialInsumo.insumo.nome}" (do material "${produtoMaterial.material.nome}"). Disponível: ${materialInsumo.insumo.estoque} ${materialInsumo.insumo.unidade}, Necessário: ${quantidadeTotal} ${materialInsumo.insumo.unidade}`,
+                });
+              }
+
+              // Decrementar estoque
+              await prisma.insumo.update({
+                where: { id: materialInsumo.insumoId },
+                data: {
+                  estoque: {
+                    decrement: quantidadeTotal,
+                  },
+                },
+              });
+            }
+          }
+        }
       }
 
       const venda = await prisma.venda.create({

@@ -72,9 +72,11 @@ Este projeto visa facilitar o controle e gerenciamento das vendas de produtos ar
 
 ### Módulo de Materiais
 
-- ⏳ Controle de materiais e insumos
-- ⏳ Cálculo de custo de produção
-- ⏳ Visualização do estoque
+- ✅ Controle de materiais e insumos
+- ✅ Cálculo de custo de produção
+- ✅ Visualização do estoque
+- ✅ Controle automático de estoque (ativável/desativável)
+- ✅ Decremento automático de insumos ao realizar vendas
 
 ## 🚀 Estrutura do Projeto
 
@@ -170,9 +172,12 @@ fio-e-flor-system/
 7. [x] Configurar estrutura do frontend
 8. [x] Implementar tela de acesso com senha
 9. [x] Implementar páginas principais
-10. [ ] Implementar dashboard e relatórios
-11. [ ] Testes e ajustes finais
-12. [ ] Deploy
+10. [x] Implementar dashboard e relatórios
+11. [x] Implementar controle automático de estoque
+12. [ ] Upload de imagens para produtos
+13. [ ] Gráficos visuais no dashboard
+14. [ ] Testes e ajustes finais
+15. [ ] Deploy
 
 ## 📄 Licença
 

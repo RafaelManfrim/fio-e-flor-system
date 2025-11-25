@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './providers/AuthContextProvider';
 import { useAuth } from './hooks/useAuth';
 import { ThemeProvider } from './providers/ThemeContextProvider';
+import { ConfigProvider } from './providers/ConfigContextProvider';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Produtos } from './pages/Produtos';
@@ -37,7 +38,9 @@ function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <AppRoutes />
+          <ConfigProvider>
+            <AppRoutes />
+          </ConfigProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
