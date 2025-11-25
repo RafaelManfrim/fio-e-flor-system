@@ -4,6 +4,7 @@ import api from '../services/api';
 import { ClienteModal } from '../components/ClienteModal';
 import type { Cliente } from '../dtos/Cliente';
 import type { ClienteFormData } from '../schemas';
+import { Table, Thead, Tbody, Tr, Th, Td } from '../components/Table';
 
 export function Clientes() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -98,51 +99,43 @@ export function Clientes() {
       </div>
 
       {/* Lista de Clientes */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nome
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Telefone
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Endereço
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ações
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {clientesFiltrados.map((cliente) => (
-              <tr key={cliente.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">{cliente.nome}</div>
-                </td>
-                <td className="px-6 py-4">
-                  {cliente.telefone ? (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Phone className="w-4 h-4" />
-                      <span>{cliente.telefone}</span>
-                    </div>
-                  ) : (
-                    <span className="text-sm text-gray-400">-</span>
-                  )}
-                </td>
-                <td className="px-6 py-4">
-                  {cliente.endereco ? (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <MapPin className="w-4 h-4" />
-                      <span className="max-w-xs truncate">{cliente.endereco}</span>
-                    </div>
-                  ) : (
-                    <span className="text-sm text-gray-400">-</span>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+      <Table>
+        <Thead>
+          <Tr>
+            <Th>Nome</Th>
+            <Th>Telefone</Th>
+            <Th>Endereço</Th>
+            <Th align="right">Ações</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {clientesFiltrados.map((cliente) => (
+            <Tr key={cliente.id}>
+              <Td>
+                <div className="text-sm font-medium text-gray-900">{cliente.nome}</div>
+              </Td>
+              <Td>
+                {cliente.telefone ? (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Phone className="w-4 h-4" />
+                    <span>{cliente.telefone}</span>
+                  </div>
+                ) : (
+                  <span className="text-sm text-gray-400">-</span>
+                )}
+              </Td>
+              <Td>
+                {cliente.endereco ? (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <MapPin className="w-4 h-4" />
+                    <span className="max-w-xs truncate">{cliente.endereco}</span>
+                  </div>
+                ) : (
+                  <span className="text-sm text-gray-400">-</span>
+                )}
+              </Td>
+              <Td align="right">
+                <div className="whitespace-nowrap text-sm font-medium">
                   <button
                     onClick={() => {
                       setEditingCliente(cliente);
@@ -158,17 +151,21 @@ export function Clientes() {
                   >
                     <Trash2 className="w-4 h-4 inline" />
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {clientesFiltrados.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            Nenhum cliente encontrado
-          </div>
-        )}
-      </div>
+                </div>
+              </Td>
+            </Tr>
+          ))}
+          {clientesFiltrados.length === 0 && (
+            <Tr>
+              <Td align="center">
+                <div className="py-8 text-gray-500" style={{ gridColumn: '1 / -1' }}>
+                  Nenhum cliente encontrado
+                </div>
+              </Td>
+            </Tr>
+          )}
+        </Tbody>
+      </Table>
 
       <ClienteModal
         isOpen={showModal}

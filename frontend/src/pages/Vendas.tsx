@@ -3,6 +3,7 @@ import { Plus, Eye, Trash2, Search, Calendar } from 'lucide-react';
 import api from '../services/api';
 import { VendaModal } from '../components/VendaModal';
 import type { Venda } from '../dtos/Venda';
+import { Table, Thead, Tbody, Tr, Th, Td } from '../components/Table';
 
 export function Vendas() {
   const [vendas, setVendas] = useState<Venda[]>([]);
@@ -110,46 +111,42 @@ export function Vendas() {
       </div>
 
       {/* Lista de Vendas */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Data
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Cliente
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Produtos
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Valor Total
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ações
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {vendasFiltradas.map((venda) => (
-              <tr key={venda.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-gray-400" />
-                    {new Date(venda.data).toLocaleDateString('pt-BR')}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      <Table>
+        <Thead>
+          <Tr>
+            <Th>Data</Th>
+            <Th>Cliente</Th>
+            <Th>Produtos</Th>
+            <Th>Valor Total</Th>
+            <Th align="right">Ações</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {vendasFiltradas.map((venda) => (
+            <Tr key={venda.id}>
+              <Td>
+                <div className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-900">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                  {new Date(venda.data).toLocaleDateString('pt-BR')}
+                </div>
+              </Td>
+              <Td>
+                <div className="whitespace-nowrap text-sm text-gray-900">
                   {venda.cliente?.nome || 'Cliente não informado'}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
+                </div>
+              </Td>
+              <Td>
+                <div className="text-sm text-gray-900">
                   {venda.produtos.map(p => p.produto.nome).join(', ')}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                </div>
+              </Td>
+              <Td>
+                <div className="whitespace-nowrap text-sm font-semibold text-gray-900">
                   R$ {venda.valorTotal.toFixed(2)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                </div>
+              </Td>
+              <Td align="right">
+                <div className="whitespace-nowrap text-sm font-medium">
                   <button className="text-indigo-600 hover:text-indigo-900 mr-4">
                     <Eye className="w-4 h-4 inline" />
                   </button>
@@ -159,17 +156,21 @@ export function Vendas() {
                   >
                     <Trash2 className="w-4 h-4 inline" />
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {vendasFiltradas.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            Nenhuma venda encontrada
-          </div>
-        )}
-      </div>
+                </div>
+              </Td>
+            </Tr>
+          ))}
+          {vendasFiltradas.length === 0 && (
+            <Tr>
+              <Td align="center">
+                <div className="py-8 text-gray-500" style={{ gridColumn: '1 / -1' }}>
+                  Nenhuma venda encontrada
+                </div>
+              </Td>
+            </Tr>
+          )}
+        </Tbody>
+      </Table>
 
       <VendaModal
         isOpen={showModal}

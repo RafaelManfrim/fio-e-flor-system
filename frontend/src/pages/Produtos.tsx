@@ -3,6 +3,7 @@ import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import api from '../services/api';
 import { ProdutoModal } from '../components/ProdutoModal';
 import type { Produto } from '../dtos/Produto';
+import { Table, Thead, Tbody, Tr, Th, Td } from '../components/Table';
 
 export function Produtos() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -96,54 +97,50 @@ export function Produtos() {
       </div>
 
       {/* Lista de Produtos */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Produto
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Preço
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Custo
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Margem
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ações
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {produtosFiltrados.map((produto) => {
-              const margem = ((produto.preco - produto.custo) / produto.preco * 100).toFixed(1);
-              return (
-                <tr key={produto.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{produto.nome}</div>
-                      {produto.descricao && (
-                        <div className="text-sm text-gray-500">{produto.descricao}</div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      <Table>
+        <Thead>
+          <Tr>
+            <Th>Produto</Th>
+            <Th>Preço</Th>
+            <Th>Custo</Th>
+            <Th>Margem</Th>
+            <Th align="right">Ações</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {produtosFiltrados.map((produto) => {
+            const margem = ((produto.preco - produto.custo) / produto.preco * 100).toFixed(1);
+            return (
+              <Tr key={produto.id}>
+                <Td>
+                  <div className="whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{produto.nome}</div>
+                    {produto.descricao && (
+                      <div className="text-sm text-gray-500">{produto.descricao}</div>
+                    )}
+                  </div>
+                </Td>
+                <Td>
+                  <div className="whitespace-nowrap text-sm text-gray-900">
                     R$ {produto.preco.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  </div>
+                </Td>
+                <Td>
+                  <div className="whitespace-nowrap text-sm text-gray-900">
                     R$ {produto.custo.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  </div>
+                </Td>
+                <Td>
+                  <div className="whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs rounded-full ${
                       parseFloat(margem) > 50 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                     }`}>
                       {margem}%
                     </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  </div>
+                </Td>
+                <Td align="right">
+                  <div className="whitespace-nowrap text-sm font-medium">
                     <button
                       onClick={() => {
                         setEditingProduto(produto);
@@ -159,18 +156,22 @@ export function Produtos() {
                     >
                       <Trash2 className="w-4 h-4 inline" />
                     </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {produtosFiltrados.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            Nenhum produto encontrado
-          </div>
-        )}
-      </div>
+                  </div>
+                </Td>
+              </Tr>
+            );
+          })}
+          {produtosFiltrados.length === 0 && (
+            <Tr>
+              <Td align="center">
+                <div className="py-8 text-gray-500" style={{ gridColumn: '1 / -1' }}>
+                  Nenhum produto encontrado
+                </div>
+              </Td>
+            </Tr>
+          )}
+        </Tbody>
+      </Table>
 
       <ProdutoModal
         isOpen={showModal}
