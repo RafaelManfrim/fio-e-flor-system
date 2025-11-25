@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Package, ShoppingCart, Users, Boxes, Layers, LogOut, Moon, Sun } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '../hooks/useTheme';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { logout } = useAuth();
