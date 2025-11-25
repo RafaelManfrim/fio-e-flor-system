@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Search, Package } from 'lucide-react';
 import api from '../services/api';
+import { InsumoModal } from '../components/InsumoModal';
 import type { Insumo } from '../dtos/Insumo';
+import type { InsumoFormData } from '../schemas';
 
 export function Insumos() {
   const [insumos, setInsumos] = useState<Insumo[]>([]);
@@ -9,11 +11,6 @@ export function Insumos() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingInsumo, setEditingInsumo] = useState<Insumo | null>(null);
-  const [formData, setFormData] = useState({
-    nome: '',
-    estoque: '',
-    unidade: '',
-  });
 
   useEffect(() => {
     carregarInsumos();
@@ -42,18 +39,15 @@ export function Insumos() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSaveInsumo = async (data: InsumoFormData) => {
     try {
       if (editingInsumo) {
-        await api.put(`/insumos/${editingInsumo.id}`, formData);
+        await api.put(`/insumos/${editingInsumo.id}`, data);
       } else {
-        await api.post('/insumos', formData);
+        await api.post('/insumos', data);
       }
       
       setShowModal(false);
-      setFormData({ nome: '', estoque: '', unidade: '' });
       setEditingInsumo(null);
       carregarInsumos();
     } catch (error) {
@@ -63,18 +57,13 @@ export function Insumos() {
   };
 
   const abrirModal = (insumo?: Insumo) => {
-    if (insumo) {
-      setEditingInsumo(insumo);
-      setFormData({
-        nome: insumo.nome,
-        estoque: insumo.estoque.toString(),
-        unidade: insumo.unidade,
-      });
-    } else {
-      setEditingInsumo(null);
-      setFormData({ nome: '', estoque: '', unidade: '' });
-    }
+    setEditingInsumo(insumo || null);
     setShowModal(true);
+  };
+
+  const fecharModal = () => {
+    setShowModal(false);
+    setEditingInsumo(null);
   };
 
   const insumosFiltrados = insumos.filter((i) =>
@@ -162,86 +151,12 @@ export function Insumos() {
         </div>
       )}
 
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-4">
-              {editingInsumo ? 'Editar Insumo' : 'Novo Insumo'}
-            </h3>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nome *
-                </label>
-                <input
-                  type="text"
-                  value={formData.nome}
-                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Estoque *
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.estoque}
-                    onChange={(e) => setFormData({ ...formData, estoque: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Unidade *
-                  </label>
-                  <select
-                    value={formData.unidade}
-                    onChange={(e) => setFormData({ ...formData, unidade: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                    required
-                  >
-                    <option value="">Selecione</option>
-                    <option value="metros">Metros</option>
-                    <option value="gramas">Gramas</option>
-                    <option value="unidades">Unidades</option>
-                    <option value="litros">Litros</option>
-                    <option value="kg">Kg</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex gap-2 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowModal(false);
-                    setFormData({ nome: '', estoque: '', unidade: '' });
-                    setEditingInsumo(null);
-                  }}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg transition"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg transition"
-                >
-                  {editingInsumo ? 'Atualizar' : 'Cadastrar'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <InsumoModal
+        isOpen={showModal}
+        onClose={fecharModal}
+        onSave={handleSaveInsumo}
+        insumo={editingInsumo || undefined}
+      />
     </div>
   );
 }

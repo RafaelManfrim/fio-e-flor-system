@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Plus, Trash2 } from 'lucide-react';
+import { vendaSchema, type VendaFormData } from '../schemas';
 import api from '../services/api';
 
 interface VendaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (venda: any) => void;
+  onSave: (venda: VendaFormData) => void;
 }
 
 interface Produto {
@@ -19,18 +22,31 @@ interface Cliente {
   nome: string;
 }
 
-interface ProdutoVenda {
-  produtoId: string;
-  quantidade: number;
-  precoUnit: number;
-}
-
 export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [produtosVenda, setProdutosVenda] = useState<ProdutoVenda[]>([]);
-  const [clienteId, setClienteId] = useState('');
-  const [data, setData] = useState(new Date().toISOString().split('T')[0]);
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(vendaSchema),
+    defaultValues: {
+      clienteId: '',
+      data: new Date().toISOString().split('T')[0],
+      produtos: [],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'produtos',
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -58,54 +74,33 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
   };
 
   const adicionarProduto = () => {
-    setProdutosVenda([...produtosVenda, { produtoId: '', quantidade: 1, precoUnit: 0 }]);
+    append({ produtoId: '', quantidade: 1, precoUnit: 0 });
   };
 
-  const removerProduto = (index: number) => {
-    setProdutosVenda(produtosVenda.filter((_, i) => i !== index));
-  };
-
-  const atualizarProduto = (index: number, field: string, value: any) => {
-    const novoProdutos = [...produtosVenda];
-    novoProdutos[index] = { ...novoProdutos[index], [field]: value };
-    
-    // Se mudar o produto, atualizar o preço automaticamente
-    if (field === 'produtoId') {
-      const produto = produtos.find(p => p.id === value);
-      if (produto) {
-        novoProdutos[index].precoUnit = produto.preco;
-      }
+  const handleProdutoChange = (index: number, produtoId: string) => {
+    const produto = produtos.find(p => p.id === produtoId);
+    if (produto) {
+      setValue(`produtos.${index}.produtoId`, produtoId);
+      setValue(`produtos.${index}.precoUnit`, produto.preco);
     }
-    
-    setProdutosVenda(novoProdutos);
   };
 
   const calcularTotal = () => {
-    return produtosVenda.reduce((total, item) => {
-      return total + (item.quantidade * item.precoUnit);
+    const produtosAtual = watch('produtos');
+    return produtosAtual.reduce((total: number, item: { produtoId: string; quantidade: number; precoUnit: number }) => {
+      const quantidade = Number(item.quantidade) || 0;
+      const preco = Number(item.precoUnit) || 0;
+      return total + (quantidade * preco);
     }, 0);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (produtosVenda.length === 0) {
-      alert('Adicione pelo menos um produto à venda');
-      return;
-    }
-
-    const vendaData = {
-      clienteId: clienteId || null,
-      data,
-      produtos: produtosVenda,
-    };
-
-    onSave(vendaData);
-    
-    // Limpar formulário
-    setProdutosVenda([]);
-    setClienteId('');
-    setData(new Date().toISOString().split('T')[0]);
+  const onSubmit = (data: VendaFormData) => {
+    onSave(data);
+    reset({
+      clienteId: '',
+      data: new Date().toISOString().split('T')[0],
+      produtos: [],
+    });
   };
 
   if (!isOpen) return null;
@@ -123,15 +118,14 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Cliente
               </label>
               <select
-                value={clienteId}
-                onChange={(e) => setClienteId(e.target.value)}
+                {...register('clienteId')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
               >
                 <option value="">Sem cliente</option>
@@ -139,6 +133,9 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
                   <option key={cliente.id} value={cliente.id}>{cliente.nome}</option>
                 ))}
               </select>
+              {errors.clienteId && (
+                <p className="mt-1 text-sm text-red-600">{errors.clienteId.message}</p>
+              )}
             </div>
 
             <div>
@@ -147,11 +144,12 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
               </label>
               <input
                 type="date"
-                value={data}
-                onChange={(e) => setData(e.target.value)}
+                {...register('data')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                required
               />
+              {errors.data && (
+                <p className="mt-1 text-sm text-red-600">{errors.data.message}</p>
+              )}
             </div>
           </div>
 
@@ -171,61 +169,81 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
             </div>
 
             <div className="space-y-3">
-              {produtosVenda.map((item, index) => (
-                <div key={index} className="flex gap-2 items-start">
-                  <select
-                    value={item.produtoId}
-                    onChange={(e) => atualizarProduto(index, 'produtoId', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                    required
-                  >
-                    <option value="">Selecione um produto</option>
-                    {produtos.map(produto => (
-                      <option key={produto.id} value={produto.id}>
-                        {produto.nome} - R$ {produto.preco.toFixed(2)}
-                      </option>
-                    ))}
-                  </select>
+              {fields.map((field, index) => (
+                <div key={field.id} className="flex gap-2 items-start">
+                  <div className="flex-1">
+                    <select
+                      {...register(`produtos.${index}.produtoId`)}
+                      onChange={(e) => handleProdutoChange(index, e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    >
+                      <option value="">Selecione um produto</option>
+                      {produtos.map(produto => (
+                        <option key={produto.id} value={produto.id}>
+                          {produto.nome} - R$ {produto.preco.toFixed(2)}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.produtos?.[index]?.produtoId && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.produtos[index]?.produtoId?.message}
+                      </p>
+                    )}
+                  </div>
 
-                  <input
-                    type="number"
-                    min="1"
-                    value={item.quantidade}
-                    onChange={(e) => atualizarProduto(index, 'quantidade', parseInt(e.target.value))}
-                    className="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                    placeholder="Qtd"
-                    required
-                  />
+                  <div className="w-20">
+                    <input
+                      type="number"
+                      min="1"
+                      {...register(`produtos.${index}.quantidade`)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Qtd"
+                    />
+                    {errors.produtos?.[index]?.quantidade && (
+                      <p className="mt-1 text-xs text-red-600">
+                        {errors.produtos[index]?.quantidade?.message}
+                      </p>
+                    )}
+                  </div>
 
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={item.precoUnit}
-                    onChange={(e) => atualizarProduto(index, 'precoUnit', parseFloat(e.target.value))}
-                    className="w-28 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                    placeholder="Preço"
-                    required
-                  />
+                  <div className="w-28">
+                    <input
+                      type="number"
+                      step="0.01"
+                      {...register(`produtos.${index}.precoUnit`)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Preço"
+                    />
+                    {errors.produtos?.[index]?.precoUnit && (
+                      <p className="mt-1 text-xs text-red-600">
+                        {errors.produtos[index]?.precoUnit?.message}
+                      </p>
+                    )}
+                  </div>
 
                   <button
                     type="button"
-                    onClick={() => removerProduto(index)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                    onClick={() => remove(index)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition mt-1"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               ))}
 
-              {produtosVenda.length === 0 && (
+              {fields.length === 0 && (
                 <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
                   Nenhum produto adicionado. Clique em "Adicionar Produto" para começar.
                 </div>
               )}
             </div>
+
+            {errors.produtos && !Array.isArray(errors.produtos) && (
+              <p className="mt-1 text-sm text-red-600">{errors.produtos.message}</p>
+            )}
           </div>
 
-          {produtosVenda.length > 0 && (
+          {fields.length > 0 && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <div className="flex justify-between items-center">
                 <span className="text-lg font-medium text-green-900">Total da Venda:</span>

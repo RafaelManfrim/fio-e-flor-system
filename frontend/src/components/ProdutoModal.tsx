@@ -1,43 +1,62 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
+import { produtoSchema, type ProdutoFormData } from '../schemas';
+import type { Produto } from '../dtos/Produto';
 
 interface ProdutoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (produto: any) => void;
-  produto?: any;
+  onSave: (produto: ProdutoFormData) => void;
+  produto?: Produto;
 }
 
 export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalProps) {
-  const [formData, setFormData] = useState({
-    nome: '',
-    descricao: '',
-    preco: '',
-    custo: '',
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(produtoSchema),
+    defaultValues: {
+      nome: '',
+      descricao: '',
+      preco: 0,
+      custo: 0,
+      imagens: [],
+    },
   });
 
   useEffect(() => {
     if (produto) {
-      setFormData({
+      reset({
         nome: produto.nome,
         descricao: produto.descricao || '',
-        preco: produto.preco.toString(),
-        custo: produto.custo.toString(),
+        preco: produto.preco,
+        custo: produto.custo,
+        imagens: produto.imagens || [],
       });
     } else {
-      setFormData({
+      reset({
         nome: '',
         descricao: '',
-        preco: '',
-        custo: '',
+        preco: 0,
+        custo: 0,
+        imagens: [],
       });
     }
-  }, [produto]);
+  }, [produto, reset]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave(formData);
+  const onSubmit = (data: ProdutoFormData) => {
+    onSave(data);
+    reset();
   };
+
+  const preco = watch('preco') as number;
+  const custo = watch('custo') as number;
 
   if (!isOpen) return null;
 
@@ -56,19 +75,20 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Nome do Produto *
             </label>
             <input
               type="text"
-              value={formData.nome}
-              onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+              {...register('nome')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
               placeholder="Ex: Vestido Floral"
-              required
             />
+            {errors.nome && (
+              <p className="mt-1 text-sm text-red-600">{errors.nome.message}</p>
+            )}
           </div>
 
           <div>
@@ -76,12 +96,14 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
               Descrição
             </label>
             <textarea
-              value={formData.descricao}
-              onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+              {...register('descricao')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
               rows={3}
               placeholder="Descrição do produto..."
             />
+            {errors.descricao && (
+              <p className="mt-1 text-sm text-red-600">{errors.descricao.message}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -92,12 +114,13 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
               <input
                 type="number"
                 step="0.01"
-                value={formData.custo}
-                onChange={(e) => setFormData({ ...formData, custo: e.target.value })}
+                {...register('custo')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 placeholder="0.00"
-                required
               />
+              {errors.custo && (
+                <p className="mt-1 text-sm text-red-600">{errors.custo.message}</p>
+              )}
             </div>
 
             <div>
@@ -107,27 +130,28 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
               <input
                 type="number"
                 step="0.01"
-                value={formData.preco}
-                onChange={(e) => setFormData({ ...formData, preco: e.target.value })}
+                {...register('preco')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 placeholder="0.00"
-                required
               />
+              {errors.preco && (
+                <p className="mt-1 text-sm text-red-600">{errors.preco.message}</p>
+              )}
             </div>
           </div>
 
-          {formData.preco && formData.custo && (
+          {preco && custo && preco > 0 && custo >= 0 && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-blue-900">Margem de Lucro:</span>
                 <span className="text-lg font-bold text-blue-900">
-                  {(((parseFloat(formData.preco) - parseFloat(formData.custo)) / parseFloat(formData.preco)) * 100).toFixed(1)}%
+                  {(((Number(preco) - Number(custo)) / Number(preco)) * 100).toFixed(1)}%
                 </span>
               </div>
               <div className="flex justify-between items-center mt-2">
                 <span className="text-sm text-blue-700">Lucro por unidade:</span>
                 <span className="text-sm font-semibold text-blue-700">
-                  R$ {(parseFloat(formData.preco) - parseFloat(formData.custo)).toFixed(2)}
+                  R$ {(Number(preco) - Number(custo)).toFixed(2)}
                 </span>
               </div>
             </div>

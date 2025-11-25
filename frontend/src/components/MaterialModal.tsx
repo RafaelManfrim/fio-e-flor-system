@@ -2,48 +2,45 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
-import { clienteSchema, type ClienteFormData } from '../schemas';
-import type { Cliente } from '../dtos/Cliente';
+import { materialSchema, type MaterialFormData } from '../schemas';
+import type { Material } from '../dtos/Material';
 
-interface ClienteModalProps {
+interface MaterialModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (cliente: ClienteFormData) => void;
-  cliente?: Cliente;
+  onSave: (material: MaterialFormData) => void;
+  material?: Material;
 }
 
-export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalProps) {
+export function MaterialModal({ isOpen, onClose, onSave, material }: MaterialModalProps) {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(clienteSchema),
+    resolver: zodResolver(materialSchema),
     defaultValues: {
       nome: '',
-      telefone: '',
-      endereco: '',
+      descricao: '',
     },
   });
 
   useEffect(() => {
-    if (cliente) {
+    if (material) {
       reset({
-        nome: cliente.nome,
-        telefone: cliente.telefone || '',
-        endereco: cliente.endereco || '',
+        nome: material.nome,
+        descricao: material.descricao || '',
       });
     } else {
       reset({
         nome: '',
-        telefone: '',
-        endereco: '',
+        descricao: '',
       });
     }
-  }, [cliente, reset]);
+  }, [material, reset]);
 
-  const onSubmit = (data: ClienteFormData) => {
+  const onSubmit = (data: MaterialFormData) => {
     onSave(data);
     reset();
   };
@@ -55,7 +52,7 @@ export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalP
       <div className="bg-white rounded-lg p-6 max-w-md w-full">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-gray-900">
-            {cliente ? 'Editar Cliente' : 'Novo Cliente'}
+            {material ? 'Editar Material' : 'Novo Material'}
           </h3>
           <button
             onClick={onClose}
@@ -68,13 +65,13 @@ export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalP
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nome Completo *
+              Nome *
             </label>
             <input
               type="text"
               {...register('nome')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              placeholder="Ex: Maria Silva"
+              placeholder="Ex: Tecido Algodão"
             />
             {errors.nome && (
               <p className="mt-1 text-sm text-red-600">{errors.nome.message}</p>
@@ -83,31 +80,16 @@ export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalP
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Telefone
-            </label>
-            <input
-              type="tel"
-              {...register('telefone')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              placeholder="(00) 00000-0000"
-            />
-            {errors.telefone && (
-              <p className="mt-1 text-sm text-red-600">{errors.telefone.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Endereço
+              Descrição
             </label>
             <textarea
-              {...register('endereco')}
+              {...register('descricao')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
               rows={3}
-              placeholder="Rua, número, bairro, cidade..."
+              placeholder="Detalhes sobre o material..."
             />
-            {errors.endereco && (
-              <p className="mt-1 text-sm text-red-600">{errors.endereco.message}</p>
+            {errors.descricao && (
+              <p className="mt-1 text-sm text-red-600">{errors.descricao.message}</p>
             )}
           </div>
 
@@ -123,7 +105,7 @@ export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalP
               type="submit"
               className="flex-1 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition"
             >
-              {cliente ? 'Atualizar' : 'Cadastrar'}
+              {material ? 'Atualizar' : 'Cadastrar'}
             </button>
           </div>
         </form>

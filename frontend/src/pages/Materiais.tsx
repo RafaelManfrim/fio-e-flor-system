@@ -1,24 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Search, Layers } from 'lucide-react';
 import api from '../services/api';
+import { MaterialModal } from '../components/MaterialModal';
 import type { Material } from '../dtos/Material';
-import type { Insumo } from '../dtos/Insumo';
+import type { MaterialFormData } from '../schemas';
 
 export function Materiais() {
   const [materiais, setMateriais] = useState<Material[]>([]);
-  const [insumos, setInsumos] = useState<Insumo[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
-  const [formData, setFormData] = useState({
-    nome: '',
-    descricao: '',
-  });
 
   useEffect(() => {
     carregarMateriais();
-    carregarInsumos();
   }, []);
 
   const carregarMateriais = async () => {
@@ -29,15 +24,6 @@ export function Materiais() {
       console.error('Erro ao carregar materiais:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const carregarInsumos = async () => {
-    try {
-      const response = await api.get('/insumos');
-      setInsumos(response.data);
-    } catch (error) {
-      console.error('Erro ao carregar insumos:', error);
     }
   };
 
@@ -53,18 +39,15 @@ export function Materiais() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSaveMaterial = async (data: MaterialFormData) => {
     try {
       if (editingMaterial) {
-        await api.put(`/materiais/${editingMaterial.id}`, formData);
+        await api.put(`/materiais/${editingMaterial.id}`, data);
       } else {
-        await api.post('/materiais', formData);
+        await api.post('/materiais', data);
       }
       
       setShowModal(false);
-      setFormData({ nome: '', descricao: '' });
       setEditingMaterial(null);
       carregarMateriais();
     } catch (error) {
@@ -74,17 +57,13 @@ export function Materiais() {
   };
 
   const abrirModal = (material?: Material) => {
-    if (material) {
-      setEditingMaterial(material);
-      setFormData({
-        nome: material.nome,
-        descricao: material.descricao || '',
-      });
-    } else {
-      setEditingMaterial(null);
-      setFormData({ nome: '', descricao: '' });
-    }
+    setEditingMaterial(material || null);
     setShowModal(true);
+  };
+
+  const fecharModal = () => {
+    setShowModal(false);
+    setEditingMaterial(null);
   };
 
   const materiaisFiltrados = materiais.filter((m) =>
@@ -195,63 +174,12 @@ export function Materiais() {
         )}
       </div>
 
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-4">
-              {editingMaterial ? 'Editar Material' : 'Novo Material'}
-            </h3>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nome *
-                </label>
-                <input
-                  type="text"
-                  value={formData.nome}
-                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Descrição
-                </label>
-                <textarea
-                  value={formData.descricao}
-                  onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                  rows={3}
-                />
-              </div>
-
-              <div className="flex gap-2 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowModal(false);
-                    setFormData({ nome: '', descricao: '' });
-                    setEditingMaterial(null);
-                  }}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg transition"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg transition"
-                >
-                  {editingMaterial ? 'Atualizar' : 'Cadastrar'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <MaterialModal
+        isOpen={showModal}
+        onClose={fecharModal}
+        onSave={handleSaveMaterial}
+        material={editingMaterial || undefined}
+      />
     </div>
   );
 }

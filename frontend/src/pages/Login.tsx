@@ -1,19 +1,32 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../contexts/AuthContext';
 import { Lock } from 'lucide-react';
+import { loginSchema, type LoginFormData } from '../schemas';
 
 export function Login() {
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const success = login(password);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      password: '',
+    },
+  });
+
+  const onSubmit = (data: LoginFormData) => {
+    const success = login(data.password);
     
     if (!success) {
       setError('Senha incorreta!');
-      setPassword('');
+      reset();
     }
   };
 
@@ -28,7 +41,7 @@ export function Login() {
           <p className="text-gray-600 mt-2">Sistema de Gerenciamento</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
               Senha de Acesso
@@ -36,15 +49,18 @@ export function Login() {
             <input
               type="password"
               id="password"
-              value={password}
+              {...register('password')}
               onChange={(e) => {
-                setPassword(e.target.value);
+                register('password').onChange(e);
                 setError('');
               }}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition"
               placeholder="Digite a senha"
               autoFocus
             />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+            )}
           </div>
 
           {error && (
