@@ -111,20 +111,20 @@ export function CompraInsumosModal({ isOpen, onClose, onSave }: CompraInsumosMod
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto transition-colors">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             <div className="bg-green-100 p-2 rounded-lg">
               <ShoppingCart className="w-6 h-6 text-green-600" />
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-gray-900">Compra de Insumos</h3>
-              <p className="text-sm text-gray-600">Registre a entrada de múltiplos insumos</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Compra de Insumos</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Registre a entrada de múltiplos insumos</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
           >
             <X className="w-6 h-6" />
           </button>
@@ -132,21 +132,21 @@ export function CompraInsumosModal({ isOpen, onClose, onSave }: CompraInsumosMod
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Motivo / Observação
             </label>
             <input
               type="text"
               value={motivo}
               onChange={(e) => setMotivo(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
               placeholder="Ex: Compra realizada em 25/11/2025 - Fornecedor XYZ"
             />
           </div>
 
           <div>
             <div className="flex justify-between items-center mb-3">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Insumos *
               </label>
               <button
@@ -168,7 +168,7 @@ export function CompraInsumosModal({ isOpen, onClose, onSave }: CompraInsumosMod
                       <select
                         value={item.insumoId}
                         onChange={(e) => atualizarItem(index, 'insumoId', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                         required
                       >
                         <option value="">Selecione um insumo</option>
@@ -187,16 +187,16 @@ export function CompraInsumosModal({ isOpen, onClose, onSave }: CompraInsumosMod
                         min="0"
                         value={item.quantidade || ''}
                         onChange={(e) => atualizarItem(index, 'quantidade', parseFloat(e.target.value) || 0)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                         placeholder="Quantidade"
                         required
                       />
                     </div>
 
                     {insumo && (
-                      <div className="w-40 p-2 bg-green-50 border border-green-200 rounded-lg text-center">
-                        <span className="text-xs text-green-700">Novo estoque</span>{" "}
-                        <span className="text-sm font-bold text-green-900">
+                      <div className="w-40 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-center transition-colors">
+                        <span className="text-xs text-green-700 dark:text-green-300">Novo estoque</span>{" "}
+                        <span className="text-sm font-bold text-green-900 dark:text-green-100">
                           {(insumo.estoque + item.quantidade).toFixed(2)}
                         </span>
                       </div>
@@ -216,17 +216,17 @@ export function CompraInsumosModal({ isOpen, onClose, onSave }: CompraInsumosMod
             </div>
 
             {itensCompra.length === 0 && (
-              <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+              <div className="text-center py-8 text-gray-400 dark:text-gray-500 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
                 Nenhum insumo adicionado. Clique em "Adicionar Insumo" para começar.
               </div>
             )}
           </div>
 
           {calcularTotal() > 0 && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 transition-colors">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-blue-900">Total de insumos:</span>
-                <span className="text-lg font-bold text-blue-900">
+                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">Total de insumos:</span>
+                <span className="text-lg font-bold text-blue-900 dark:text-blue-100">
                   {calcularTotal()} item(ns)
                 </span>
               </div>
@@ -238,7 +238,7 @@ export function CompraInsumosModal({ isOpen, onClose, onSave }: CompraInsumosMod
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50"
             >
               Cancelar
             </button>

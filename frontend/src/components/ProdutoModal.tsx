@@ -73,14 +73,14 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto transition-colors">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-semibold text-gray-900">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             {produto ? 'Editar Produto' : 'Novo Produto'}
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
           >
             <X className="w-6 h-6" />
           </button>
@@ -88,13 +88,13 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Nome do Produto *
             </label>
             <input
               type="text"
               {...register('nome')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
               placeholder="Ex: Vestido Floral"
             />
             {errors.nome && (
@@ -103,12 +103,12 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Descrição
             </label>
             <textarea
               {...register('descricao')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
               rows={3}
               placeholder="Descrição do produto..."
             />
@@ -119,14 +119,14 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Custo de Produção (R$) *
               </label>
               <input
                 type="number"
                 step="0.01"
                 {...register('custo')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                 placeholder="0.00"
               />
               {errors.custo && (
@@ -135,14 +135,14 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Preço de Venda (R$) *
               </label>
               <input
                 type="number"
                 step="0.01"
                 {...register('preco')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                 placeholder="0.00"
               />
               {errors.preco && (
@@ -152,16 +152,16 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
           </div>
 
           {preco && custo && preco > 0 && custo >= 0 && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 transition-colors">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-blue-900">Margem de Lucro:</span>
-                <span className="text-lg font-bold text-blue-900">
+                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">Margem de Lucro:</span>
+                <span className="text-lg font-bold text-blue-900 dark:text-blue-100">
                   {(((Number(preco) - Number(custo)) / Number(preco)) * 100).toFixed(1)}%
                 </span>
               </div>
               <div className="flex justify-between items-center mt-2">
-                <span className="text-sm text-blue-700">Lucro por unidade:</span>
-                <span className="text-sm font-semibold text-blue-700">
+                <span className="text-sm text-blue-700 dark:text-blue-300">Lucro por unidade:</span>
+                <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
                   R$ {(Number(preco) - Number(custo)).toFixed(2)}
                 </span>
               </div>
@@ -172,7 +172,7 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Cancelar
             </button>

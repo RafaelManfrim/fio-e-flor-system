@@ -118,12 +118,12 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto transition-colors">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-semibold text-gray-900">Nova Venda</h3>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Nova Venda</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
           >
             <X className="w-6 h-6" />
           </button>
@@ -132,12 +132,12 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Cliente
               </label>
               <select
                 {...register('clienteId')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
               >
                 <option value="">Sem cliente</option>
                 {clientes.map(cliente => (
@@ -150,13 +150,13 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Data *
               </label>
               <input
                 type="date"
                 {...register('data')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
               />
               {errors.data && (
                 <p className="mt-1 text-sm text-red-600">{errors.data.message}</p>
@@ -166,7 +166,7 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
 
           <div>
             <div className="flex justify-between items-center mb-3">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Produtos *
               </label>
               <button
@@ -186,7 +186,7 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
                     <select
                       {...register(`produtos.${index}.produtoId`)}
                       onChange={(e) => handleProdutoChange(index, e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                     >
                       <option value="">Selecione um produto</option>
                       {produtos.map(produto => (
@@ -207,7 +207,7 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
                       type="number"
                       min="1"
                       {...register(`produtos.${index}.quantidade`)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                       placeholder="Qtd"
                     />
                     {errors.produtos?.[index]?.quantidade && (
@@ -222,7 +222,7 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
                       type="number"
                       step="0.01"
                       {...register(`produtos.${index}.precoUnit`)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                       placeholder="Preço"
                     />
                     {errors.produtos?.[index]?.precoUnit && (
@@ -243,7 +243,7 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
               ))}
 
               {fields.length === 0 && (
-                <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+                <div className="text-center py-8 text-gray-400 dark:text-gray-500 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
                   Nenhum produto adicionado. Clique em "Adicionar Produto" para começar.
                 </div>
               )}
@@ -255,10 +255,10 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
           </div>
 
           {fields.length > 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 transition-colors">
               <div className="flex justify-between items-center">
-                <span className="text-lg font-medium text-green-900">Total da Venda:</span>
-                <span className="text-2xl font-bold text-green-900">
+                <span className="text-lg font-medium text-green-900 dark:text-green-100">Total da Venda:</span>
+                <span className="text-2xl font-bold text-green-900 dark:text-green-100">
                   R$ {calcularTotal().toFixed(2)}
                 </span>
               </div>
@@ -269,7 +269,7 @@ export function VendaModal({ isOpen, onClose, onSave }: VendaModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Cancelar
             </button>

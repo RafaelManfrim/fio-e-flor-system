@@ -65,14 +65,14 @@ export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalP
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full transition-colors">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-semibold text-gray-900">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             {cliente ? 'Editar Cliente' : 'Novo Cliente'}
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
           >
             <X className="w-6 h-6" />
           </button>
@@ -80,13 +80,13 @@ export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalP
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Nome Completo *
             </label>
             <input
               type="text"
               {...register('nome')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
               placeholder="Ex: Maria Silva"
             />
             {errors.nome && (
@@ -95,13 +95,13 @@ export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalP
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Telefone
             </label>
             <input
               type="tel"
               {...register('telefone')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
               placeholder="(00) 00000-0000"
             />
             {errors.telefone && (
@@ -110,12 +110,12 @@ export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalP
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Endereço
             </label>
             <textarea
               {...register('endereco')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
               rows={3}
               placeholder="Rua, número, bairro, cidade..."
             />
@@ -128,7 +128,7 @@ export function ClienteModal({ isOpen, onClose, onSave, cliente }: ClienteModalP
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Cancelar
             </button>

@@ -5,7 +5,7 @@ export function Dashboard() {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h2>
         <p className="text-gray-600 mt-2">Bem-vinda ao sistema de gerenciamento!</p>
       </div>
 

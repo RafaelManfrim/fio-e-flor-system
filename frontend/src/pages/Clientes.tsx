@@ -69,8 +69,8 @@ export function Clientes() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Clientes</h2>
-          <p className="text-gray-600 mt-1">{clientes.length} clientes cadastrados</p>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Clientes</h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{clientes.length} clientes cadastrados</p>
         </div>
         <button
           onClick={() => {
@@ -93,7 +93,7 @@ export function Clientes() {
             placeholder="Buscar clientes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 transition-colors"
           />
         </div>
       </div>
@@ -112,26 +112,26 @@ export function Clientes() {
           {clientesFiltrados.map((cliente) => (
             <Tr key={cliente.id}>
               <Td>
-                <div className="text-sm font-medium text-gray-900">{cliente.nome}</div>
+                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{cliente.nome}</div>
               </Td>
               <Td>
                 {cliente.telefone ? (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <Phone className="w-4 h-4" />
                     <span>{cliente.telefone}</span>
                   </div>
                 ) : (
-                  <span className="text-sm text-gray-400">-</span>
+                  <span className="text-sm text-gray-400 dark:text-gray-500">-</span>
                 )}
               </Td>
               <Td>
                 {cliente.endereco ? (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <MapPin className="w-4 h-4" />
                     <span className="max-w-xs truncate">{cliente.endereco}</span>
                   </div>
                 ) : (
-                  <span className="text-sm text-gray-400">-</span>
+                  <span className="text-sm text-gray-400 dark:text-gray-500">-</span>
                 )}
               </Td>
               <Td align="right">
@@ -158,7 +158,7 @@ export function Clientes() {
           {clientesFiltrados.length === 0 && (
             <Tr>
               <Td align="center">
-                <div className="py-8 text-gray-500" style={{ gridColumn: '1 / -1' }}>
+                <div className="py-8 text-gray-500 dark:text-gray-400" style={{ gridColumn: '1 / -1' }}>
                   Nenhum cliente encontrado
                 </div>
               </Td>

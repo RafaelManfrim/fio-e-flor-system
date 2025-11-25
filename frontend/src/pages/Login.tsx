@@ -31,19 +31,19 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 to-purple-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 transition-colors">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md transition-colors">
         <div className="flex flex-col items-center mb-8">
-          <div className="bg-pink-500 p-4 rounded-full mb-4">
+          <div className="bg-pink-500 dark:bg-pink-600 p-4 rounded-full mb-4 transition-colors">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800">Fio e Flor</h1>
-          <p className="text-gray-600 mt-2">Sistema de Gerenciamento</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Fio e Flor</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Sistema de Gerenciamento</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Senha de Acesso
             </label>
             <input
@@ -54,7 +54,7 @@ export function Login() {
                 register('password').onChange(e);
                 setError('');
               }}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition"
               placeholder="Digite a senha"
               autoFocus
             />
@@ -64,7 +64,7 @@ export function Login() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg transition-colors">
               {error}
             </div>
           )}

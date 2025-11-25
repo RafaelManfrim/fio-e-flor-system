@@ -67,8 +67,8 @@ export function Produtos() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Produtos</h2>
-          <p className="text-gray-600 mt-1">{produtos.length} produtos cadastrados</p>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Produtos</h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{produtos.length} produtos cadastrados</p>
         </div>
         <button
           onClick={() => {
@@ -91,7 +91,7 @@ export function Produtos() {
             placeholder="Buscar produtos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 transition-colors"
           />
         </div>
       </div>
@@ -114,19 +114,19 @@ export function Produtos() {
               <Tr key={produto.id}>
                 <Td>
                   <div className="whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{produto.nome}</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{produto.nome}</div>
                     {produto.descricao && (
-                      <div className="text-sm text-gray-500">{produto.descricao}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{produto.descricao}</div>
                     )}
                   </div>
                 </Td>
                 <Td>
-                  <div className="whitespace-nowrap text-sm text-gray-900">
+                  <div className="whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                     R$ {produto.preco.toFixed(2)}
                   </div>
                 </Td>
                 <Td>
-                  <div className="whitespace-nowrap text-sm text-gray-900">
+                  <div className="whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                     R$ {produto.custo.toFixed(2)}
                   </div>
                 </Td>
@@ -164,7 +164,7 @@ export function Produtos() {
           {produtosFiltrados.length === 0 && (
             <Tr>
               <Td align="center">
-                <div className="py-8 text-gray-500" style={{ gridColumn: '1 / -1' }}>
+                <div className="py-8 text-gray-500 dark:text-gray-400" style={{ gridColumn: '1 / -1' }}>
                   Nenhum produto encontrado
                 </div>
               </Td>

@@ -66,8 +66,8 @@ export function Vendas() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Vendas</h2>
-          <p className="text-gray-600 mt-1">{vendas.length} vendas registradas</p>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Vendas</h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{vendas.length} vendas registradas</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -80,17 +80,17 @@ export function Vendas() {
 
       {/* Estatísticas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <p className="text-gray-600 text-sm mb-2">Total em Vendas</p>
-          <p className="text-3xl font-bold text-gray-900">R$ {totalVendas.toFixed(2)}</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 transition-colors">
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Total em Vendas</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">R$ {totalVendas.toFixed(2)}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <p className="text-gray-600 text-sm mb-2">Quantidade de Vendas</p>
-          <p className="text-3xl font-bold text-gray-900">{vendas.length}</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 transition-colors">
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Quantidade de Vendas</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{vendas.length}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <p className="text-gray-600 text-sm mb-2">Ticket Médio</p>
-          <p className="text-3xl font-bold text-gray-900">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 transition-colors">
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Ticket Médio</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             R$ {vendas.length > 0 ? (totalVendas / vendas.length).toFixed(2) : '0.00'}
           </p>
         </div>
@@ -105,7 +105,7 @@ export function Vendas() {
             placeholder="Buscar por cliente ou produto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 transition-colors"
           />
         </div>
       </div>
@@ -125,23 +125,23 @@ export function Vendas() {
           {vendasFiltradas.map((venda) => (
             <Tr key={venda.id}>
               <Td>
-                <div className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-900">
-                  <Calendar className="w-4 h-4 text-gray-400" />
+                <div className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                  <Calendar className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   {new Date(venda.data).toLocaleDateString('pt-BR')}
                 </div>
               </Td>
               <Td>
-                <div className="whitespace-nowrap text-sm text-gray-900">
+                <div className="whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                   {venda.cliente?.nome || 'Cliente não informado'}
                 </div>
               </Td>
               <Td>
-                <div className="text-sm text-gray-900">
+                <div className="text-sm text-gray-900 dark:text-gray-100">
                   {venda.produtos.map(p => p.produto.nome).join(', ')}
                 </div>
               </Td>
               <Td>
-                <div className="whitespace-nowrap text-sm font-semibold text-gray-900">
+                <div className="whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100">
                   R$ {venda.valorTotal.toFixed(2)}
                 </div>
               </Td>
@@ -163,7 +163,7 @@ export function Vendas() {
           {vendasFiltradas.length === 0 && (
             <Tr>
               <Td align="center">
-                <div className="py-8 text-gray-500" style={{ gridColumn: '1 / -1' }}>
+                <div className="py-8 text-gray-500 dark:text-gray-400" style={{ gridColumn: '1 / -1' }}>
                   Nenhuma venda encontrada
                 </div>
               </Td>
