@@ -17,6 +17,14 @@ export const produtoSchema = z.object({
   imagens: z.array(z.string())
     .optional()
     .default([]),
+  materiais: z.array(z.object({
+    materialId: z.string(),
+    quantidade: z.number().positive(),
+  })).optional().default([]),
+  insumos: z.array(z.object({
+    insumoId: z.string(),
+    quantidade: z.number().positive(),
+  })).optional().default([]),
 });
 
 export type ProdutoFormData = z.infer<typeof produtoSchema>;

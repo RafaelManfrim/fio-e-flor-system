@@ -4,6 +4,7 @@ import api from '../services/api';
 import { ProdutoModal } from '../components/ProdutoModal';
 import type { Produto } from '../dtos/Produto';
 import { Table, Thead, Tbody, Tr, Th, Td } from '../components/Table';
+import type { ProdutoFormData } from '../schemas';
 
 export function Produtos() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -39,7 +40,7 @@ export function Produtos() {
     }
   };
 
-  const handleSaveProduto = async (produtoData: any) => {
+  const handleSaveProduto = async (produtoData: ProdutoFormData) => {
     try {
       if (editingProduto) {
         await api.put(`/produtos/${editingProduto.id}`, produtoData);
@@ -101,33 +102,67 @@ export function Produtos() {
         <Thead>
           <Tr>
             <Th>Produto</Th>
-            <Th>Preço</Th>
+            <Th>Descrição</Th>
+            <Th>Materiais</Th>
+            <Th>Insumos</Th>
             <Th>Custo</Th>
+            <Th>Preço</Th>
             <Th>Margem</Th>
             <Th align="right">Ações</Th>
           </Tr>
         </Thead>
         <Tbody>
           {produtosFiltrados.map((produto) => {
-            const margem = ((produto.preco - produto.custo) / produto.preco * 100).toFixed(1);
+            const margem = ((produto.preco - produto.custo) / produto.custo * 100).toFixed(1);
+
             return (
               <Tr key={produto.id}>
                 <Td>
                   <div className="whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{produto.nome}</div>
-                    {produto.descricao && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400">{produto.descricao}</div>
-                    )}
+                  </div>
+                </Td>
+                <Td>
+                  {produto.descricao ? (
+                    <div className="text-sm text-gray-500 dark:text-gray-400">{produto.descricao}</div>
+                  ) : (
+                    <span className="text-sm text-gray-400 dark:text-gray-500">-</span>
+                  )}
+                </Td>
+                <Td>
+                  {(produto.materiais ?? []).length > 0 ? (
+                    <div className="space-y-1">
+                      {produto.materiais?.map((mi) => (
+                        <div key={mi.material.id} className="text-sm text-gray-600 dark:text-gray-400">
+                          {mi.material.nome}: {mi.quantidade}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-sm text-gray-400 dark:text-gray-500">Nenhum insumo vinculado</span>
+                  )}
+                </Td>
+                <Td>
+                  {((produto.insumos ?? []).length > 0 ? (
+                    <div className="space-y-1">
+                      {produto.insumos?.map((mi) => (
+                        <div key={mi.insumo.id} className="text-sm text-gray-600 dark:text-gray-400">
+                          {mi.insumo.nome}: {mi.quantidade} {mi.insumo.unidade}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-sm text-gray-400 dark:text-gray-500">Nenhum insumo vinculado</span>
+                  ))}
+                </Td>
+                <Td>
+                  <div className="whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    R$ {produto.custo.toFixed(2)}
                   </div>
                 </Td>
                 <Td>
                   <div className="whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                     R$ {produto.preco.toFixed(2)}
-                  </div>
-                </Td>
-                <Td>
-                  <div className="whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                    R$ {produto.custo.toFixed(2)}
                   </div>
                 </Td>
                 <Td>
@@ -163,7 +198,7 @@ export function Produtos() {
           })}
           {produtosFiltrados.length === 0 && (
             <Tr>
-              <Td align="center">
+              <Td align="center" colSpan={8}>
                 <div className="py-8 text-gray-500 dark:text-gray-400" style={{ gridColumn: '1 / -1' }}>
                   Nenhum produto encontrado
                 </div>
@@ -180,7 +215,7 @@ export function Produtos() {
           setEditingProduto(null);
         }}
         onSave={handleSaveProduto}
-        produto={editingProduto}
+        produto={editingProduto ?? undefined}
       />
     </div>
   );

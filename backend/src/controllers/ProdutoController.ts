@@ -11,6 +11,11 @@ export class ProdutoController {
               material: true,
             },
           },
+          insumos: {
+            include: {
+              insumo: true,
+            },
+          },
         },
         orderBy: {
           createdAt: 'desc',
@@ -50,6 +55,11 @@ export class ProdutoController {
               },
             },
           },
+          insumos: {
+            include: {
+              insumo: true,
+            },
+          },
         },
       });
 
@@ -71,7 +81,7 @@ export class ProdutoController {
 
   async criar(req: Request, res: Response) {
     try {
-      const { nome, descricao, preco, custo, imagens, materiais } = req.body;
+      const { nome, descricao, preco, custo, imagens, materiais, insumos } = req.body;
 
       const produto = await prisma.produto.create({
         data: {
@@ -86,9 +96,16 @@ export class ProdutoController {
               quantidade: m.quantidade,
             })),
           },
+          insumos: {
+            create: insumos?.map((i: any) => ({
+              insumoId: i.insumoId,
+              quantidade: i.quantidade,
+            })),
+          },
         },
         include: {
           materiais: true,
+          insumos: true,
         },
       });
 
@@ -107,7 +124,20 @@ export class ProdutoController {
   async atualizar(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { nome, descricao, preco, custo, imagens } = req.body;
+      const { nome, descricao, preco, custo, imagens, materiais, insumos } = req.body;
+
+      // Se materiais ou insumos forem fornecidos, deletar os existentes e criar novos
+      if (materiais !== undefined) {
+        await prisma.produtoMaterial.deleteMany({
+          where: { produtoId: id },
+        });
+      }
+
+      if (insumos !== undefined) {
+        await prisma.produtoInsumo.deleteMany({
+          where: { produtoId: id },
+        });
+      }
 
       const produto = await prisma.produto.update({
         where: { id },
@@ -117,6 +147,30 @@ export class ProdutoController {
           preco: preco ? parseFloat(preco) : undefined,
           custo: custo ? parseFloat(custo) : undefined,
           imagens: imagens ? JSON.stringify(imagens) : undefined,
+          materiais: materiais ? {
+            create: materiais.map((m: any) => ({
+              materialId: m.materialId,
+              quantidade: m.quantidade,
+            })),
+          } : undefined,
+          insumos: insumos ? {
+            create: insumos.map((i: any) => ({
+              insumoId: i.insumoId,
+              quantidade: i.quantidade,
+            })),
+          } : undefined,
+        },
+        include: {
+          materiais: {
+            include: {
+              material: true,
+            },
+          },
+          insumos: {
+            include: {
+              insumo: true,
+            },
+          },
         },
       });
 

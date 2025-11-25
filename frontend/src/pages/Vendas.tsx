@@ -4,14 +4,13 @@ import api from '../services/api';
 import { VendaModal } from '../components/VendaModal';
 import type { Venda } from '../dtos/Venda';
 import { Table, Thead, Tbody, Tr, Th, Td } from '../components/Table';
+import type { VendaFormData } from '../schemas';
 
 export function Vendas() {
   const [vendas, setVendas] = useState<Venda[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
-
-  
 
   const carregarVendas = async () => {
     try {
@@ -36,9 +35,15 @@ export function Vendas() {
     }
   };
 
-  const handleSaveVenda = async (vendaData: any) => {
+  const handleSaveVenda = async (vendaData: VendaFormData) => {
     try {
-      await api.post('/vendas', vendaData);
+      // Converter data para ISO com horário fixo ao meio-dia para evitar problemas de timezone
+      const dataComHorario = `${vendaData.data}T12:00:00.000Z`;
+      
+      await api.post('/vendas', {
+        ...vendaData,
+        data: dataComHorario,
+      });
       setShowModal(false);
       carregarVendas();
     } catch (error) {
@@ -162,7 +167,7 @@ export function Vendas() {
           ))}
           {vendasFiltradas.length === 0 && (
             <Tr>
-              <Td align="center">
+              <Td align="center" colSpan={5}>
                 <div className="py-8 text-gray-500 dark:text-gray-400" style={{ gridColumn: '1 / -1' }}>
                   Nenhuma venda encontrada
                 </div>

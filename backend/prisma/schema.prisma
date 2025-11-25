@@ -32,6 +32,7 @@ model Insumo {
   updatedAt DateTime @updatedAt
 
   materiais MaterialInsumo[]
+  produtos  ProdutoInsumo[]
 
   @@map("insumos")
 }
@@ -72,6 +73,7 @@ model Produto {
   updatedAt DateTime @updatedAt
 
   materiais ProdutoMaterial[]
+  insumos   ProdutoInsumo[]
   vendas    VendaProduto[]
 
   @@map("produtos")
@@ -87,6 +89,18 @@ model ProdutoMaterial {
   material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
 
   @@map("produtos_materiais")
+}
+
+model ProdutoInsumo {
+  id         String @id @default(uuid())
+  produtoId  String
+  insumoId   String
+  quantidade Float
+
+  produto Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  insumo  Insumo  @relation(fields: [insumoId], references: [id], onDelete: Cascade)
+
+  @@map("produtos_insumos")
 }
 
 model Venda {

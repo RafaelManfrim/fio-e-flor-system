@@ -157,7 +157,7 @@ export function Clientes() {
           ))}
           {clientesFiltrados.length === 0 && (
             <Tr>
-              <Td align="center">
+              <Td align="center" colSpan={4}>
                 <div className="py-8 text-gray-500 dark:text-gray-400" style={{ gridColumn: '1 / -1' }}>
                   Nenhum cliente encontrado
                 </div>
