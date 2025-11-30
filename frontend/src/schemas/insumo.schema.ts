@@ -8,6 +8,8 @@ export const insumoSchema = z.object({
     .nonnegative('Estoque não pode ser negativo'),
   unidade: z.string()
     .min(1, 'Unidade é obrigatória'),
+  categoria: z.string()
+    .min(1, 'Categoria é obrigatória'),
 });
 
 export type InsumoFormData = z.infer<typeof insumoSchema>;

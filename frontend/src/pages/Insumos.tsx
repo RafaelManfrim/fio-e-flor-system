@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Search, Package, ArrowUpCircle, ArrowDownCircle, ShoppingCart } from 'lucide-react';
+import { Plus, Trash2, Search, Package, ArrowUpCircle, ArrowDownCircle, ShoppingCart } from 'lucide-react';
 import api from '../services/api';
 import { InsumoModal } from '../components/InsumoModal';
 import { AjusteEstoqueModal } from '../components/AjusteEstoqueModal';
@@ -9,9 +9,10 @@ import type { InsumoFormData } from '../schemas';
 import { EstoqueBadge } from '../components/EstoqueBadge';
 import { Table, Thead, Tbody, Tr, Th, Td } from '../components/Table';
 
+type CategoriaInsumo = 'Haste' | 'Ferro' | 'Embrulho' | 'Outros';
+
 export function Insumos() {
   const [insumos, setInsumos] = useState<Insumo[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingInsumo, setEditingInsumo] = useState<Insumo | null>(null);
@@ -19,10 +20,7 @@ export function Insumos() {
   const [insumoAjuste, setInsumoAjuste] = useState<Insumo | null>(null);
   const [tipoAjuste, setTipoAjuste] = useState<'adicionar' | 'remover'>('adicionar');
   const [showCompraModal, setShowCompraModal] = useState(false);
-
-  useEffect(() => {
-    carregarInsumos();
-  }, []);
+  const [categoriaAtual, setCategoriaAtual] = useState<CategoriaInsumo>('Haste');
 
   const carregarInsumos = async () => {
     try {
@@ -30,10 +28,12 @@ export function Insumos() {
       setInsumos(response.data);
     } catch (error) {
       console.error('Erro ao carregar insumos:', error);
-    } finally {
-      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    carregarInsumos();
+  }, []);
 
   const deletarInsumo = async (id: string) => {
     if (!confirm('Deseja realmente deletar este insumo?')) return;
@@ -105,15 +105,18 @@ export function Insumos() {
   };
 
   const insumosFiltrados = insumos.filter((i) =>
-    i.nome.toLowerCase().includes(searchTerm.toLowerCase())
+    i.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    i.categoria === categoriaAtual
   );
 
-  if (loading) {
-    return <div className="text-center py-8">Carregando...</div>;
-  }
+  const categorias: CategoriaInsumo[] = ['Haste', 'Ferro', 'Embrulho', 'Outros'];
+  
+  const getQuantidadePorCategoria = (categoria: CategoriaInsumo) => {
+    return insumos.filter(i => i.categoria === categoria).length;
+  };
 
   return (
-    <div>
+    <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Insumos</h2>
@@ -135,6 +138,27 @@ export function Insumos() {
             Novo Insumo
           </button>
         </div>
+      </div>
+
+      {/* Tabs de Categorias */}
+      <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
+        <nav className="flex space-x-8" aria-label="Tabs">
+          {categorias.map((categoria) => (
+            <button
+              key={categoria}
+              onClick={() => setCategoriaAtual(categoria)}
+              className={`
+                py-2 px-1 border-b-2 font-medium text-sm transition-colors
+                ${categoriaAtual === categoria
+                  ? 'border-pink-500 text-pink-600 dark:text-pink-400'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                }
+              `}
+            >
+              {categoria} ({getQuantidadePorCategoria(categoria)})
+            </button>
+          ))}
+        </nav>
       </div>
 
       {/* Search */}
@@ -205,13 +229,6 @@ export function Insumos() {
                     <ArrowDownCircle className="w-4 h-4 inline" />
                   </button>
                   <button
-                    onClick={() => abrirModal(insumo)}
-                    className="text-indigo-600 hover:text-indigo-900"
-                    title="Editar"
-                  >
-                    <Pencil className="w-4 h-4 inline" />
-                  </button>
-                  <button
                     onClick={() => deletarInsumo(insumo.id)}
                     className="text-red-600 hover:text-red-900"
                     title="Deletar"
@@ -239,6 +256,7 @@ export function Insumos() {
         onClose={fecharModal}
         onSave={handleSaveInsumo}
         insumo={editingInsumo || undefined}
+        categoriaAtual={categoriaAtual}
       />
 
       {insumoAjuste && (

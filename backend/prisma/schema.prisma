@@ -28,6 +28,7 @@ model Insumo {
   nome      String
   estoque   Float    @default(0)
   unidade   String // ex: metros, gramas, unidades
+  categoria String   @default("Haste") // Haste, Ferro, Embrulho, Outros
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

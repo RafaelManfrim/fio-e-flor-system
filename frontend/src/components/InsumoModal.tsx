@@ -10,13 +10,15 @@ interface InsumoModalProps {
   onClose: () => void;
   onSave: (insumo: InsumoFormData) => void;
   insumo?: Insumo;
+  categoriaAtual?: string;
 }
 
-export function InsumoModal({ isOpen, onClose, onSave, insumo }: InsumoModalProps) {
+export function InsumoModal({ isOpen, onClose, onSave, insumo, categoriaAtual = 'Haste' }: InsumoModalProps) {
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(insumoSchema),
@@ -24,6 +26,7 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo }: InsumoModalProp
       nome: '',
       estoque: 0,
       unidade: '',
+      categoria: categoriaAtual,
     },
   });
 
@@ -33,15 +36,24 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo }: InsumoModalProp
         nome: insumo.nome,
         estoque: Number(insumo.estoque),
         unidade: insumo.unidade,
+        categoria: insumo.categoria,
       });
     } else {
       reset({
         nome: '',
         estoque: 0,
         unidade: '',
+        categoria: categoriaAtual,
       });
     }
-  }, [insumo, reset, isOpen]);
+  }, [insumo, reset, isOpen, categoriaAtual]);
+
+  // Atualizar categoria quando a tab mudar
+  useEffect(() => {
+    if (!insumo) {
+      setValue('categoria', categoriaAtual);
+    }
+  }, [categoriaAtual, insumo, setValue]);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -77,6 +89,9 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo }: InsumoModalProp
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Campo hidden para categoria */}
+          <input type="hidden" {...register('categoria')} />
+          
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Nome *

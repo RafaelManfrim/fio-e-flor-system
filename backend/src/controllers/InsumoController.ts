@@ -45,13 +45,14 @@ export class InsumoController {
 
   async criar(req: Request, res: Response) {
     try {
-      const { nome, estoque, unidade } = req.body;
+      const { nome, estoque, unidade, categoria } = req.body;
 
       const insumo = await prisma.insumo.create({
         data: {
           nome,
           estoque: parseFloat(estoque),
           unidade,
+          categoria: categoria || 'Haste',
         },
       });
 
@@ -65,7 +66,7 @@ export class InsumoController {
   async atualizar(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { nome, estoque, unidade } = req.body;
+      const { nome, estoque, unidade, categoria } = req.body;
 
       const insumo = await prisma.insumo.update({
         where: { id },
@@ -73,6 +74,7 @@ export class InsumoController {
           nome,
           estoque: estoque !== undefined ? parseFloat(estoque) : undefined,
           unidade,
+          categoria,
         },
       });
 
