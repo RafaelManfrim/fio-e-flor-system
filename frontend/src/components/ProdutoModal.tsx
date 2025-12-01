@@ -37,6 +37,7 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(produtoSchema),
@@ -126,6 +127,33 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
       console.error('Erro ao carregar insumos:', error);
     }
   };
+
+  // Atualizar custo sempre que materiais/insumos mudarem
+  useEffect(() => {
+    let custoTotal = 0;
+
+    // Calcular custo dos materiais
+    materiaisVinculados.forEach((mv) => {
+      const material = materiais.find((m) => m.id === mv.materialId);
+      if (material && mv.quantidade > 0) {
+        const custoMaterial = material.insumos.reduce(
+          (total, mi) => total + (mi.quantidade * mi.insumo.custoUnitario),
+          0
+        );
+        custoTotal += custoMaterial * mv.quantidade;
+      }
+    });
+
+    // Calcular custo dos insumos diretos
+    insumosVinculados.forEach((iv) => {
+      const insumo = insumos.find((i) => i.id === iv.insumoId);
+      if (insumo && iv.quantidade > 0) {
+        custoTotal += insumo.custoUnitario * iv.quantidade;
+      }
+    });
+
+    setValue('custo', Number(custoTotal.toFixed(2)));
+  }, [materiaisVinculados, insumosVinculados, materiais, insumos, setValue]);
 
   const adicionarMaterial = () => {
     setMateriaisVinculados([...materiaisVinculados, { materialId: '', quantidade: 1 }]);
@@ -220,42 +248,6 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
                 placeholder="Descrição do produto..."
               />
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Custo de Produção (R$) *
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  {...register('custo')}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
-                  placeholder="0.00"
-                />
-                {errors.custo && (
-                  <p className="mt-1 text-sm text-red-600">{errors.custo.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Preço de Venda (R$) *
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  {...register('preco')}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
-                  placeholder="0.00"
-                />
-                {errors.preco && (
-                  <p className="mt-1 text-sm text-red-600">{errors.preco.message}</p>
-                )}
-              </div>
-            </div>
-
-            <LucratividadeCard custo={custo} preco={preco} />
           </div>
 
           {/* Materiais */}
@@ -293,7 +285,6 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
                 <div className="w-32">
                   <input
                     type="number"
-                    step="0.01"
                     min="0"
                     value={materialVinc.quantidade}
                     onChange={(e) => atualizarMaterial(index, 'quantidade', parseFloat(e.target.value) || 0)}
@@ -353,7 +344,6 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
                 <div className="w-32">
                   <input
                     type="number"
-                    step="0.01"
                     min="0"
                     value={insumoVinc.quantidade}
                     onChange={(e) => atualizarInsumo(index, 'quantidade', parseFloat(e.target.value) || 0)}
@@ -377,6 +367,47 @@ export function ProdutoModal({ isOpen, onClose, onSave, produto }: ProdutoModalP
               </p>
             )}
           </div>
+
+          <div className="grid grid-cols-1 gap-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Custo de Produção (R$) *
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  {...register('custo')}
+                  className="w-full px-3 py-2 bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
+                  placeholder="0.00"
+                  readOnly
+                  title="Calculado automaticamente baseado nos materiais e insumos vinculados"
+                />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Calculado automaticamente
+                </p>
+                {errors.custo && (
+                  <p className="mt-1 text-sm text-red-600">{errors.custo.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Preço de Venda (R$) *
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  {...register('preco')}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
+                  placeholder="0.00"
+                />
+                {errors.preco && (
+                  <p className="mt-1 text-sm text-red-600">{errors.preco.message}</p>
+                )}
+              </div>
+            </div>
+
+            <LucratividadeCard custo={custo} preco={preco} />
 
           <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
             <button

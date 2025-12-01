@@ -45,14 +45,21 @@ export class InsumoController {
 
   async criar(req: Request, res: Response) {
     try {
-      const { nome, estoque, unidade, categoria } = req.body;
+      const { nome, estoque, unidade, categoria, custoUnitario } = req.body;
+
+      // Define custo padrão: 0.20 para Haste, deve ser informado para outras categorias
+      const cat = categoria || 'Haste';
+      const custo = custoUnitario !== undefined 
+        ? parseFloat(custoUnitario) 
+        : (cat === 'Haste' ? 0.20 : 0);
 
       const insumo = await prisma.insumo.create({
         data: {
           nome,
           estoque: parseFloat(estoque),
           unidade,
-          categoria: categoria || 'Haste',
+          categoria: cat,
+          custoUnitario: custo,
         },
       });
 
@@ -66,7 +73,7 @@ export class InsumoController {
   async atualizar(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { nome, estoque, unidade, categoria } = req.body;
+      const { nome, estoque, unidade, categoria, custoUnitario } = req.body;
 
       const insumo = await prisma.insumo.update({
         where: { id },
@@ -75,6 +82,7 @@ export class InsumoController {
           estoque: estoque !== undefined ? parseFloat(estoque) : undefined,
           unidade,
           categoria,
+          custoUnitario: custoUnitario !== undefined ? parseFloat(custoUnitario) : undefined,
         },
       });
 

@@ -24,13 +24,14 @@ model Cliente {
 }
 
 model Insumo {
-  id        String   @id @default(uuid())
-  nome      String
-  estoque   Float    @default(0)
-  unidade   String // ex: metros, gramas, unidades
-  categoria String   @default("Haste") // Haste, Ferro, Embrulho, Outros
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  nome          String
+  estoque       Float    @default(0)
+  unidade       String // ex: metros, gramas, unidades
+  categoria     String   @default("Haste") // Haste, Ferro, Embrulho, Outros
+  custoUnitario Float    @default(0.20) // Custo unitário em reais
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   materiais MaterialInsumo[]
   produtos  ProdutoInsumo[]

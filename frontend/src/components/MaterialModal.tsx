@@ -165,7 +165,6 @@ export function MaterialModal({ isOpen, onClose, onSave, material }: MaterialMod
                     <div className="w-40">
                       <input
                         type="number"
-                        step="0.01"
                         min="0"
                         value={item.quantidade || ''}
                         onChange={(e) => atualizarInsumo(index, 'quantidade', parseFloat(e.target.value) || 0)}

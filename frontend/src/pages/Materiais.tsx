@@ -112,11 +112,19 @@ export function Materiais() {
             <Th>Material</Th>
             <Th>Insumos Utilizados</Th>
             <Th>Descrição</Th>
+            <Th>Custo Produção</Th>
             <Th align="right">Ações</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {materiaisFiltrados.map((material) => (
+          {materiaisFiltrados.map((material) => {
+            // Calcular custo de produção baseado nos insumos
+            const custoProducao = material.insumos.reduce(
+              (total, mi) => total + (mi.quantidade * mi.insumo.custoUnitario),
+              0
+            );
+
+            return (
             <Tr key={material.id}>
               <Td>
                 <div className="flex items-center gap-3">
@@ -144,6 +152,14 @@ export function Materiais() {
                   <div className="text-sm text-gray-500 dark:text-gray-400">{material.descricao}</div>
                 ) : "-"}
               </Td>
+              <Td>
+                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {new Intl.NumberFormat('pt-BR', { 
+                    style: 'currency', 
+                    currency: 'BRL' 
+                  }).format(custoProducao)}
+                </div>
+              </Td>
               <Td align="right">
                 <div className="whitespace-nowrap text-sm font-medium">
                   <button
@@ -161,10 +177,11 @@ export function Materiais() {
                 </div>
               </Td>
             </Tr>
-          ))}
+            );
+          })}
           {materiaisFiltrados.length === 0 && (
             <Tr>
-              <Td align="center" colSpan={4}>
+              <Td align="center" colSpan={5}>
                 <div className="py-8 text-gray-500 dark:text-gray-400" style={{ gridColumn: '1 / -1' }}>
                   Nenhum material encontrado
                 </div>

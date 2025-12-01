@@ -157,7 +157,10 @@ export function Produtos() {
                 </Td>
                 <Td>
                   <div className="whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                    R$ {produto.custo.toFixed(2)}
+                    {new Intl.NumberFormat('pt-BR', { 
+                          style: 'currency', 
+                          currency: 'BRL' 
+                        }).format(produto.custo)}
                   </div>
                 </Td>
                 <Td>

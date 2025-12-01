@@ -10,6 +10,8 @@ export const insumoSchema = z.object({
     .min(1, 'Unidade é obrigatória'),
   categoria: z.string()
     .min(1, 'Categoria é obrigatória'),
+  custoUnitario: z.coerce.number()
+    .nonnegative('Custo unitário não pode ser negativo'),
 });
 
 export type InsumoFormData = z.infer<typeof insumoSchema>;

@@ -3,5 +3,6 @@ export interface Insumo {
   nome: string;
   estoque: number;
   unidade: string;
-  categoria: string;
+  categoria: "Haste" | "Ferro" | "Embrulho" | "Outros";
+  custoUnitario: number;
 }

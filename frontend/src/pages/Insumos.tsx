@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Search, Package, ArrowUpCircle, ArrowDownCircle, ShoppingCart } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Package, ArrowUpCircle, ArrowDownCircle, ShoppingCart } from 'lucide-react';
 import api from '../services/api';
 import { InsumoModal } from '../components/InsumoModal';
 import { AjusteEstoqueModal } from '../components/AjusteEstoqueModal';
@@ -182,6 +182,7 @@ export function Insumos() {
             <Th>Insumo</Th>
             <Th>Estoque</Th>
             <Th>Unidade</Th>
+            <Th>Custo Unit.</Th>
             <Th>Status</Th>
             <Th align="right">Ações</Th>
           </Tr>
@@ -210,7 +211,15 @@ export function Insumos() {
                 </div>
               </Td>
               <Td>
-                <EstoqueBadge quantidade={insumo.estoque} />
+                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {new Intl.NumberFormat('pt-BR', { 
+                    style: 'currency', 
+                    currency: 'BRL' 
+                  }).format(insumo.custoUnitario)}
+                </div>
+              </Td>
+              <Td>
+                <EstoqueBadge quantidade={insumo.estoque} categoria={insumo.categoria} />
               </Td>
               <Td align="right">
                 <div className="whitespace-nowrap text-sm font-medium flex items-center justify-end gap-2">
@@ -229,6 +238,13 @@ export function Insumos() {
                     <ArrowDownCircle className="w-4 h-4 inline" />
                   </button>
                   <button
+                    onClick={() => abrirModal(insumo)}
+                    className="text-blue-600 hover:text-blue-900"
+                    title="Editar"
+                  >
+                    <Pencil className="w-4 h-4 inline" />
+                  </button>
+                  <button
                     onClick={() => deletarInsumo(insumo.id)}
                     className="text-red-600 hover:text-red-900"
                     title="Deletar"
@@ -241,7 +257,7 @@ export function Insumos() {
           ))}
           {insumosFiltrados.length === 0 && (
             <Tr>
-              <Td align="center" colSpan={5}>
+              <Td align="center" colSpan={6}>
                 <div className="py-8 text-gray-500 dark:text-gray-400" style={{ gridColumn: '1 / -1' }}>
                   Nenhum insumo encontrado
                 </div>

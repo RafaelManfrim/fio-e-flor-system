@@ -27,6 +27,7 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo, categoriaAtual = 
       estoque: 0,
       unidade: '',
       categoria: categoriaAtual,
+      custoUnitario: categoriaAtual === 'Haste' ? 0.20 : 0,
     },
   });
 
@@ -37,6 +38,7 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo, categoriaAtual = 
         estoque: Number(insumo.estoque),
         unidade: insumo.unidade,
         categoria: insumo.categoria,
+        custoUnitario: Number(insumo.custoUnitario),
       });
     } else {
       reset({
@@ -44,6 +46,7 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo, categoriaAtual = 
         estoque: 0,
         unidade: '',
         categoria: categoriaAtual,
+        custoUnitario: categoriaAtual === 'Haste' ? 0.20 : 0,
       });
     }
   }, [insumo, reset, isOpen, categoriaAtual]);
@@ -144,6 +147,23 @@ export function InsumoModal({ isOpen, onClose, onSave, insumo, categoriaAtual = 
                 <p className="mt-1 text-sm text-red-600">{errors.unidade.message}</p>
               )}
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Custo Unitário (R$) *
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              {...register('custoUnitario', { valueAsNumber: true })}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
+              placeholder="0.00"
+            />
+            {errors.custoUnitario && (
+              <p className="mt-1 text-sm text-red-600">{errors.custoUnitario.message}</p>
+            )}
           </div>
 
           <div className="flex gap-3 pt-4">
