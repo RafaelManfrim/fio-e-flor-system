@@ -15,6 +15,9 @@ cd backend
 echo "Rodando migrations do banco de dados..."
 npx prisma migrate deploy
 
+echo "Gerando Prisma Client..."
+npx prisma generate
+
 echo "Instalando dependências do backend..."
 npm install
 
